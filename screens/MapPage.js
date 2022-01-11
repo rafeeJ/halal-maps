@@ -11,18 +11,25 @@ export default function MapPage() {
     initials: 'RJ',
   }
 
-  const { restaurants } = useContext(ResturantContext)
+  const { loading, restaurants } = useContext(ResturantContext)
 
   return (
     <SafeAreaView style={styles.SAView}>
       <MapView style={styles.map}>
-        {
+        {loading ?
+          <></> :
           restaurants.map((marker, index) => {
-            return(
-              <Marker 
-              key={index}
-              coordinate={marker.coordinate}
-              title={marker.name}
+            var coordinate = {}
+            if ("restaurantData" in marker) {
+              var latlng = marker.restaurantData.geometry.location;
+              coordinate["latitude"] = latlng.lat
+              coordinate["longitude"] = latlng.lng
+            }
+            return (
+              <Marker
+                key={index}
+                coordinate={coordinate}
+                title={marker.name}
               />
             )
           })

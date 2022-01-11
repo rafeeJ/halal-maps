@@ -1,47 +1,46 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
+import Firebase from "../config/firebase"
 
 export const ResturantContext = createContext({});
+const db = Firebase.firestore();
+const funcs = Firebase.functions();
+
+import '@expo/browser-polyfill';
 
 export const RestaurantProvider = ({ children }) => {
-    const DATA = [
-        {
-            id: 'IDFK',
-            name: 'Gourment Borgar Kitchen',
-            coordinate: {
-                latitude: 1,
-                longitide: 2
-            }
-        },
-        {
-            id: 'IDFK1',
-            name: 'Gourment Borgar Kitchen',
-            coordinate: {
-                latitude: 1,
-                longitide: 2
-            }
-        },
-        {
-            id: 'IDFK2',
-            name: 'Gourment Borgar Kitchen',
-            coordinate: {
-                latitude: 1,
-                longitide: 2
-            }
-        },
-        {
-            id: 'IDFK3',
-            name: 'Gourment Borgar Kitchen',
-            coordinate: {
-                latitude: 1,
-                longitude: 2
-            }
-        },
-    ]
+    
+    const [restaurants, setRestaurants] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    const [restaurants, setRestaurants] = useState(DATA);
+    const getRestaurants = async () => {
+        setLoading(true);
+        var data = [];
+        
+        // const respHTTP = await fetch("https://us-central1-halal-dining-uk.cloudfunctions.net/createBundle/manchester")
+        const respHTTP = await fetch("https://halal-dining-uk.web.app/createBundle/manchester")
+        let text = await respHTTP.text()
+
+        const bundlecrap = new global.TextEncoder().encode(text)
+        await db.loadBundle(bundlecrap)
+
+        const query = await db.namedQuery("latest-manchester-restaurant-query");
+        await query.get({source: "cache"})
+            .then((snap) => {
+                snap.forEach((doc) => {
+                    data.push(doc.data())
+                })
+            });
+        
+        setRestaurants(data);
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        getRestaurants()
+    }, []);
 
     return (
-        <ResturantContext.Provider value={{ restaurants, setRestaurants }}>
+        <ResturantContext.Provider value={{ loading, restaurants }}>
             {children}
         </ResturantContext.Provider>
     );
