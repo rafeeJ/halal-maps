@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Text, StyleSheet, Dimensions, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import ProfileButton from '../components/ProfileButton';
+import { ResturantContext } from '../providers/RestaurantProvider';
 
 export default function MapPage() {
   let tempUser = {
@@ -10,9 +11,30 @@ export default function MapPage() {
     initials: 'RJ',
   }
 
+  const { loading, restaurants } = useContext(ResturantContext)
+
   return (
     <SafeAreaView style={styles.SAView}>
-      <MapView style={styles.map} />
+      <MapView style={styles.map}>
+        {loading ?
+          <></> :
+          restaurants.map((marker, index) => {
+            var coordinate = {}
+            if ("restaurantData" in marker) {
+              var latlng = marker.restaurantData.geometry.location;
+              coordinate["latitude"] = latlng.lat
+              coordinate["longitude"] = latlng.lng
+            }
+            return (
+              <Marker
+                key={index}
+                coordinate={coordinate}
+                title={marker.name}
+              />
+            )
+          })
+        }
+      </MapView>
       <View pointerEvents='box-none' style={styles.innerView}>
         <View style={styles.topBar}>
           <ProfileButton user={tempUser} />
