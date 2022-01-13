@@ -1,11 +1,14 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 export default function ListViewItem(props) {
+  const navigation = useNavigation();
 
   return (
     <TouchableOpacity
       style={styles.container}
+      onPress={() => navigation.navigate("Restaurant", {restaurant: props.item})}
     >
       <Text style={{color: 'white', marginVertical: 10}}>{props.item.name}</Text>
     </TouchableOpacity>
