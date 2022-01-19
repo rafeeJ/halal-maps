@@ -4,6 +4,7 @@ const HAS_LAUNCHED = 'hasLaunched';
 
 function setAppLaunched() {
   AsyncStorage.setItem(HAS_LAUNCHED, 'true');
+  AsyncStorage.setItem("poppedUp", 'false');
 }
 
 export default async function checkIfFirstLaunch() {

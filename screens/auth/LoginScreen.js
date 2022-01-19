@@ -32,7 +32,7 @@ export default function LoginScreen({ navigation }) {
         try {
             if (email !== '' && password !== '') {
                 await auth.signInWithEmailAndPassword(email, password);
-                navigation.navigate("ProfileP")
+                navigation.goBack()
             }
         } catch (error) {
             setLoginError(error.message);

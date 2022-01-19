@@ -11,7 +11,7 @@ import Firebase from '../../config/firebase';
 
 const auth = Firebase.auth();
 
-export default function SignupScreen({ navigation }) {
+export default function SignupScreen({ navigation }, props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisibility, setPasswordVisibility] = useState(true);
@@ -36,7 +36,7 @@ export default function SignupScreen({ navigation }) {
         await auth.currentUser.updateProfile({
           displayName: name
         })
-        navigation.navigate("ProfileP")
+        navigation.goBack()
       }
     } catch (error) {
       setSignupError(error.message);
@@ -60,7 +60,7 @@ export default function SignupScreen({ navigation }) {
                  autoCapitalize='none'
                  keyboardType='default'
                  textContentType='name'
-                 autoFocus={true}
+                 autoFocus={false}
                  value={name}
                  onChangeText={text => setName(text)}
              />
