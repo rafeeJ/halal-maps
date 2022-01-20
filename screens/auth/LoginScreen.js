@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
 
@@ -17,6 +17,15 @@ export default function LoginScreen({ navigation }) {
     const [passwordVisibility, setPasswordVisibility] = useState(true);
     const [rightIcon, setRightIcon] = useState('eye');
     const [loginError, setLoginError] = useState('');
+    const [init, setInit] = useState(false)
+
+    useEffect(() => {
+        try {
+          setInit(route.params.init)
+        } catch (e) {
+          console.debug("No init")
+        }
+      }, [])
 
     const handlePasswordVisibility = () => {
         if (rightIcon === 'eye') {
@@ -32,7 +41,7 @@ export default function LoginScreen({ navigation }) {
         try {
             if (email !== '' && password !== '') {
                 await auth.signInWithEmailAndPassword(email, password);
-                navigation.goBack()
+                init ? navigation.navigate("Map") : navigation.popToTop()
             }
         } catch (error) {
             setLoginError(error.message);
@@ -91,7 +100,7 @@ export default function LoginScreen({ navigation }) {
                 }}
             />
             <RNButton
-                onPress={() => navigation.navigate('Signup')}
+                onPress={() => navigation.replace('Signup')}
                 title='Go to Signup'
                 color='#fff'
             />

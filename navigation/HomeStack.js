@@ -3,14 +3,16 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { useNavigation } from '@react-navigation/native';
+import { View } from 'react-native';
+
 import ListView from '../screens/ListView';
 import MapPage from '../screens/MapPage';
 import ProfilePage from '../screens/ProfilePage';
 import RestaurantPage from '../screens/RestaurantPage';
-
 import LoginScreen from '../screens/auth/LoginScreen'
 import SignupScreen from '../screens/auth/SignupScreen'
-import { useNavigation } from '@react-navigation/native';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -48,11 +50,21 @@ export default function HomeStack() {
     )
   }
 
+  const CreatePlaceholder = () => (
+    <View style={{ flex: 1, backgroundColor: 'blue' }} />
+  );
+
   function mainStack() {
     return (
       <Tab.Navigator screenOptions={{ headerShown: false }}>
         <Tab.Screen name="Map" component={mapStack} />
         <Tab.Screen name="List" component={listStack} />
+        <Tab.Screen name="Profile" component={CreatePlaceholder} listeners={({ navigation }) => ({
+          tabPress: event => {
+            event.preventDefault();
+            navigation.navigate("ProfileP")
+          }
+        })} />
       </Tab.Navigator>
     );
   }
@@ -63,8 +75,7 @@ export default function HomeStack() {
     async function check() {
       var b = await AsyncStorage.getItem("poppedUp")
       if (b == "false") {
-        console.log(b);
-        Navigator.navigate("Signup")
+        Navigator.navigate("ProfileP", { screen: "Signup", params: { init: true } })
         await AsyncStorage.setItem("poppedUp", "true")
       }
     }
@@ -82,14 +93,8 @@ export default function HomeStack() {
         gestureEnabled: true,
         cardOverlayEnabled: true,
       })}>
-      <Stack.Group>
         <Stack.Screen name="Main" component={mainStack} />
-        <Stack.Screen name="Profile" component={profileStack} options={{ headerShown: false }} />
-      </Stack.Group>
-      <Stack.Group>
-        <Stack.Screen name="Signup" component={SignupScreen}/>
-        <Stack.Screen name="Login" component={LoginScreen} />
-      </Stack.Group>
+        <Stack.Screen name="ProfileP" component={profileStack} />
     </Stack.Navigator>
   );
 }

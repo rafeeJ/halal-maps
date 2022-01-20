@@ -37,7 +37,6 @@ export default function MapPage() {
       </MapView>
       <View pointerEvents='box-none' style={styles.innerView}>
         <View style={styles.topBar}>
-          <ProfileButton user={tempUser} />
         </View>
       </View>
     </SafeAreaView>
