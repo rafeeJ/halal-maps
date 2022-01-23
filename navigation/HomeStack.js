@@ -13,6 +13,7 @@ import RestaurantPage from '../screens/RestaurantPage';
 import LoginScreen from '../screens/auth/LoginScreen'
 import SignupScreen from '../screens/auth/SignupScreen'
 import RegionPage from '../screens/onboard/RegionPage';
+import { Icon } from 'react-native-elements';
 
 
 const Tab = createBottomTabNavigator();
@@ -58,7 +59,23 @@ export default function HomeStack() {
 
   function mainStack() {
     return (
-      <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Navigator 
+      screenOptions={({ route }) => ({ headerShown: false, 
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+        switch (route.name) {
+          case 'Map':
+            iconName = focused ? 'map' : 'map-outline'
+            break;
+          case 'List':
+            iconName = focused ? 'list' : 'list-outline'
+            break;
+          case 'Profile':
+            iconName = focused ? 'person' : 'person-outline'
+            break;
+        }
+      return <Icon name={iconName} color={color} size={size} type="ionicon"/>
+      }, })}>
         <Tab.Screen name="Map" component={mapStack} />
         <Tab.Screen name="List" component={listStack} />
         <Tab.Screen name="Profile" component={CreatePlaceholder} listeners={({ navigation }) => ({
