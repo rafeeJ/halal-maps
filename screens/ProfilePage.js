@@ -33,17 +33,18 @@ export default function ProfilePage({ navigation }) {
 
   return (
     <>
-      { user ? 
-      <>
-      <Text>hello mr {user.displayName}</Text>
-      <Button title='Log-out' onPress={handleSignOut}/>
-      </>
-      :
-      <>
-      <Text>you do not have an account</Text>
-      <Button title='Login' onPress={() => (navigation.navigate("Login"))}/>
-      <Button title='Sign-up' onPress={() => (navigation.navigate("Signup"))}/>
-      </>
+      {user ?
+        <>
+          <Text>hello mr {user.displayName}</Text>
+          <Button title='Logout' onPress={handleSignOut} />
+          <Button title='Change Region' onPress={() => (navigation.navigate("Region", { navigation: navigation }))} />
+        </>
+        :
+        <>
+          <Text>you do not have an account</Text>
+          <Button title='Login' onPress={() => (navigation.navigate("Login"))} />
+          <Button title='Sign-up' onPress={() => (navigation.navigate("Signup"))} />
+        </>
       }
     </>
   );
