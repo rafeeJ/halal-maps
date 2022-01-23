@@ -9,17 +9,16 @@ import { AuthenticatedUserContext } from '../../providers/AuthenticatedUserProvi
 
 import Firebase from '../../config/firebase';
 import { ResturantContext } from '../../providers/RestaurantProvider';
+import { useNavigation } from '@react-navigation/native';
 
 const auth = Firebase.auth();
 
 export default function RegionPage(props) {
-
-    const { loading } = useContext(ResturantContext)
     const [region, setRegion] = useState("manchester")
 
     async function handleSubmit() {
         await AsyncStorage.setItem("Region", region)
-        props.callback()
+        props.callback ? props.callback() : props.navigation.goBack()
     }
 
     useEffect(() => {

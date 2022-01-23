@@ -6,7 +6,6 @@ import AppLoading from 'expo-app-loading';
 
 import checkIfFirstLaunch from './config/CheckIfFirstLaunched';
 import Routes from './navigation';
-import OnboardFlow from './screens/onboard/OnboardFlow';
 import RegionPage from './screens/onboard/RegionPage';
 
 export default function App() {

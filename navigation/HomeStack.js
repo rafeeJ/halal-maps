@@ -12,6 +12,7 @@ import ProfilePage from '../screens/ProfilePage';
 import RestaurantPage from '../screens/RestaurantPage';
 import LoginScreen from '../screens/auth/LoginScreen'
 import SignupScreen from '../screens/auth/SignupScreen'
+import RegionPage from '../screens/onboard/RegionPage';
 
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +25,7 @@ export default function HomeStack() {
     return (
       <ps.Navigator>
         <ps.Screen name="ProfileP" component={ProfilePage} />
+        <ps.Screen name="Region" component={RegionPage} />
         <ps.Screen name="Login" component={LoginScreen} />
         <ps.Screen name="Signup" component={SignupScreen} />
       </ps.Navigator>
