@@ -21,11 +21,16 @@ const Stack = createStackNavigator();
 
 export default function HomeStack() {
 
+  function close() {
+    const navigation = useNavigation()
+    return <Icon name="close" type="ionicon" style={{paddingRight: 10}} onPress={() => (navigation.pop())}/>
+  }
+
   function profileStack() {
     const ps = createStackNavigator()
     return (
       <ps.Navigator>
-        <ps.Screen name="ProfileP" component={ProfilePage} />
+        <ps.Screen name="ProfileP" component={ProfilePage} options={{headerBackVisible: false, headerRight: close, headerLeft: false}}/>
         <ps.Screen name="Region" component={RegionPage} />
         <ps.Screen name="Login" component={LoginScreen} />
         <ps.Screen name="Signup" component={SignupScreen} />

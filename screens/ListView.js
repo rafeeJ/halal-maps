@@ -9,7 +9,7 @@ export default function ListView() {
 
   const { restaurants } = useContext(ResturantContext)
 
-  const renderItem = ({ item }) => <ListViewItem item={item}/>
+  const renderItem = ({ item }) => <ListViewItem key={item.id} item={item}/>
 
   return (
     <SafeAreaView style={styles.SAView}>

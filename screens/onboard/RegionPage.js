@@ -34,7 +34,6 @@ export default function RegionPage(props) {
             await query.get({ source: "cache" })
                 .then((snap) => {
                     snap.forEach((doc) => {
-                        console.log(doc.data());
                         data.push(doc.data())
                     })
                 });
@@ -60,7 +59,7 @@ export default function RegionPage(props) {
                 >
                     {
                         regions.map((val, idx) => {
-                            return <Picker.Item label={val.region} value={val.region} />
+                            return <Picker.Item key={idx} label={val.region} value={val.region} />
                         })
                     }
                 </Picker>}
