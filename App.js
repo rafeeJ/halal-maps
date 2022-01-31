@@ -20,7 +20,7 @@ export default function App() {
   }
   
   useEffect(() => {
-    AsyncStorage.removeItem("hasLaunched")
+    //AsyncStorage.removeItem("hasLaunched")
     check()
   }, []);
 

@@ -43,7 +43,7 @@ export default function HomeStack() {
     return (
       <ms.Navigator screenOptions={{ headerShown: false }}>
         <ms.Screen name="MapC" component={MapPage} />
-        <ms.Screen name="Restaurant" component={RestaurantPage} options={{ headerShown: true }} />
+        <ms.Screen name="Restaurant" component={RestaurantPage} options={{ headerShown: false }} />
       </ms.Navigator>
     )
   }
@@ -82,7 +82,7 @@ export default function HomeStack() {
       return <Icon name={iconName} color={color} size={size} type="ionicon"/>
       }, })}>
         <Tab.Screen name="Map" component={mapStack} />
-        <Tab.Screen name="List" component={listStack} />
+        <Tab.Screen name="List" component={listStack} options={{ headerShown: true }}/>
         <Tab.Screen name="Profile" component={CreatePlaceholder} listeners={({ navigation }) => ({
           tabPress: event => {
             event.preventDefault();

@@ -28,7 +28,7 @@ export default function MapPage() {
     console.log("Setting up the map");
     var pointList = restaurants.map((marker, index) => {
       var point = {}
-      point["title"] = marker.name
+      point["data"] = marker.restaurantData
       if ("restaurantData" in marker) {
         var latlng = marker.restaurantData.geometry.location;
         var coords = {}
@@ -65,7 +65,7 @@ export default function MapPage() {
               <Marker
                 key={index}
                 coordinate={point.coords}
-                title={point.title}
+                title={point.data.name}
               />
             )
           })
