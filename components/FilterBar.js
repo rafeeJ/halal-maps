@@ -5,7 +5,7 @@ import { Chip } from 'react-native-elements';
 import TogglePill from './TogglePill';
 
 
-export default function FilterBar({ setState }) {
+export default function FilterBar({ setState, cats }) {
   useEffect(() => {
   }, [])
   
@@ -26,18 +26,12 @@ export default function FilterBar({ setState }) {
   const renderPill = ({ item, index }) => 
   <TogglePill id={index} toggled={ clickedID === index ? true : false} title={item} callback={handleClick}/>
 
-  const DATA = [
-    'Chicken',
-    'Curry',
-    'Fish',
-  ]
-
   return (
     <View
       style={styles.container}
     >
       <Chip title={"Clear"} onPress={() => handleClear()}/>
-      <FlatList showsHorizontalScrollIndicator={false} data={DATA} renderItem={renderPill} horizontal={true}/>
+      <FlatList showsHorizontalScrollIndicator={false} data={cats} renderItem={renderPill} horizontal={true}/>
     </View>
   );
 }

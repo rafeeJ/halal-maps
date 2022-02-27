@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Text, StyleSheet, StatusBar, FlatList, View } from 'react-native';
 import { ButtonGroup } from 'react-native-elements';
 import { Chip } from 'react-native-elements/dist/buttons/Chip';
@@ -9,27 +9,56 @@ import { ResturantContext } from '../providers/RestaurantProvider';
 
 export default function ListView() {
 
-  const { restaurants } = useContext(ResturantContext)
+  const { restaurants, categories } = useContext(ResturantContext)
 
   const [filters, setFilters] = useState([])
+  const [filteredData, setFilteredData] = useState([])
 
-  const renderItem = ({ item }) => <ListViewItem key={item.id} item={item}/>
+  useEffect(() => {
+    if (filters.length > 0) {
+      console.log(`updating filter with: ${filters}`);
+
+      let tempFilter = restaurants.filter(function (data) {
+        let toFilter = false
+        let curF = filters[0]
+        
+        if ("zabData" in data) {
+          if (data.zabData.categories.includes(curF)) {
+            toFilter = true
+          }
+        }
+
+        if ("uberData" in data) {
+          if (data.uberData.categories.includes(curF)) {
+            toFilter = true
+          }
+        }
+
+        return toFilter
+      })
+
+      setFilteredData(tempFilter)
+    } else {
+      setFilteredData([])
+    }
+  }, [filters])
+
+  const renderItem = ({ item }) => <ListViewItem key={item.id} item={item} />
 
   return (
     <View style={styles.SAView}>
-      <FilterBar setState={setFilters}/>
-      <Text>Finding all restaurants with: {filters}</Text>
-      <FlatList style={styles.list} data={restaurants} renderItem={renderItem} keyExtractor={item => item.id}/>
+      <FilterBar cats={categories} setState={setFilters} />
+      <FlatList style={styles.list} data={filteredData && filteredData.length > 0 ? filteredData : restaurants} renderItem={renderItem} keyExtractor={item => item.id} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   SAView: {
-    flex: 1, 
+    flex: 1,
     marginTop: StatusBar.currentHeight || 0,
   },
-  list : {
-    paddingHorizontal: 5  
+  list: {
+    paddingHorizontal: 5
   }
 })
