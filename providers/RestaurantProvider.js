@@ -1,7 +1,7 @@
 import React, { useState, createContext, useEffect } from 'react';
 import Firebase from "../config/firebase"
 
-import { uniq } from 'lodash'
+import { countBy, filter, map, startCase, uniq } from 'lodash'
 import AsyncStorage from "@react-native-async-storage/async-storage";    
 
 export const ResturantContext = createContext({});
@@ -32,8 +32,8 @@ export const RestaurantProvider = ({ children }) => {
         } catch (error) {
 
         }
+        
         // Once we have it, what can we do. 
-
         const respHTTP = await fetch("https://halal-dining-uk.web.app/createBundle/manchester")
         let text = await respHTTP.text()
         
@@ -58,9 +58,17 @@ export const RestaurantProvider = ({ children }) => {
                         tempCats.push(...d.uberData.categories)
                     }                
                 })
-            });        
-        setCategories(uniq(tempCats));
-
+            });    
+            
+        let x = filter(map(countBy(tempCats), function(v, k, c){
+            if (v > 5) {
+                return startCase(k)
+            } else {
+                return false
+            }
+        }), (v, k, c) => (v != false))
+        
+        setCategories(uniq(x));
         setRestaurants(data);
         setLoading(false);
     }
