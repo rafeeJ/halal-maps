@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Text, StyleSheet, Dimensions, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Callout, Marker } from 'react-native-maps';
 import ProfileButton from '../components/ProfileButton';
 import { ResturantContext } from '../providers/RestaurantProvider';
 
-export default function MapPage() {
+export default function MapPage({ navigation }) {
 
   const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
   
@@ -66,7 +66,9 @@ export default function MapPage() {
                 key={index}
                 coordinate={point.coords}
                 title={point.data.name}
-              />
+               onCalloutPress={() => (navigation.navigate('List', {initial: false, screen: 'Restaurant', params: {restaurant: point}}))}
+              >
+                </Marker>
             )
           })
         }

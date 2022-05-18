@@ -8,7 +8,7 @@ import 'firebase/firestore';
 import 'firebase/firestore/bundle';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBWNPmA1dvJDL6hEOY5HlqiLQckayAX34I",
+    apiKey: "AIzaSyAiAr0RoRsK-eVi5h1rLgICoKLgWSE41yY",
     authDomain: "halal-dining-uk.firebaseapp.com",
     projectId: "halal-dining-uk",
     storageBucket: "halal-dining-uk.appspot.com",

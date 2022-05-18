@@ -95,7 +95,6 @@ export default function HomeStack() {
 
   const Navigator = useNavigation()
   useEffect(() => {
-
     async function check() {
       var b = await AsyncStorage.getItem("poppedUp")
       if (b == "false") {
@@ -103,7 +102,6 @@ export default function HomeStack() {
         await AsyncStorage.setItem("poppedUp", "true")
       }
     }
-
     check()
   }, [])
 

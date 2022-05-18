@@ -48,7 +48,14 @@ export default function ListView() {
   return (
     <View style={styles.SAView}>
       <FilterBar cats={categories} setState={setFilters} />
-      <FlatList style={styles.list} data={filteredData && filteredData.length > 0 ? filteredData : restaurants} renderItem={renderItem} keyExtractor={item => item.id} />
+      <FlatList 
+      initialNumToRender={7}
+      maxToRenderPerBatch={6}
+      removeClippedSubviews={true}
+      style={styles.list} 
+      data={filteredData && filteredData.length > 0 ? filteredData : restaurants} 
+      renderItem={renderItem} 
+      keyExtractor={item => item.id} />
     </View>
   );
 }

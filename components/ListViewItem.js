@@ -12,7 +12,7 @@ export default function ListViewItem(props) {
     const x = ['Halal', '$', '$$', '$$$', 'Vegan', 'Vegetarian']
     var cats = 'uberData' in props.item ? props.item.uberData.categories : props.item.zabData.categories
     var cats = cats.filter(el => !x.includes(el))
-    setCategories(cats.slice(0, 3))
+    setCategories(cats.slice(0, 2))
   }, [])
 
   return (
