@@ -55,7 +55,7 @@ export default function ListView() {
       style={styles.list} 
       data={filteredData && filteredData.length > 0 ? filteredData : restaurants} 
       renderItem={renderItem} 
-      keyExtractor={item => item.id} />
+      keyExtractor={(item, index) => index} />
     </View>
   );
 }

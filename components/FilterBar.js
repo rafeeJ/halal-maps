@@ -13,8 +13,12 @@ export default function FilterBar({ setState, cats }) {
 
   const handleClick = (title, id) => {
     console.log(`Updating with ${title}, ${id}`);
-    setState([title])
-    setClickedID(id)
+    if (id === clickedID) {
+      handleClear()
+    } else {
+      setState([title])
+      setClickedID(id)
+    }
   }
   
   const handleClear = () => {
@@ -31,7 +35,7 @@ export default function FilterBar({ setState, cats }) {
       style={styles.container}
     >
       <Chip title={"Clear"} onPress={() => handleClear()}/>
-      <FlatList showsHorizontalScrollIndicator={false} data={cats} renderItem={renderPill} horizontal={true}/>
+      <FlatList keyExtractor={(item, index) => index} showsHorizontalScrollIndicator={false} data={cats} renderItem={renderPill} horizontal={true}/>
     </View>
   );
 }

@@ -82,7 +82,7 @@ export default function HomeStack() {
       return <Icon name={iconName} color={color} size={size} type="ionicon"/>
       }, })}>
         <Tab.Screen name="Map" component={mapStack} />
-        <Tab.Screen name="List" component={listStack} options={{ headerShown: true }}/>
+        <Tab.Screen name="List" component={listStack} options={{ headerShown: true, title: 'Restaurants' }}/>
         <Tab.Screen name="Profile" component={CreatePlaceholder} listeners={({ navigation }) => ({
           tabPress: event => {
             event.preventDefault();
