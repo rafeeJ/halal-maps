@@ -27,13 +27,13 @@ export default function RestaurantPage(props) {
     }, [])
 
     return (
-        <SafeAreaView style={styles.SAView}>
+        <View style={styles.SAView}>
             <Text>Hello {resta?.restaurantData?.name}</Text>
             { resta?.restaurantData?.geometry.location ? 
             <Button title="Get directions!" onPress={openMap}/> :
             <></>
             }
-        </SafeAreaView>
+        </View>
     );
 }
 

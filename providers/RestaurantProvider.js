@@ -29,7 +29,7 @@ export const RestaurantProvider = ({ children }) => {
                 console.log(r);
             }
         } catch (error) {
-
+            console.log(error);
         }
         
         // Once we have it, what can we do. 

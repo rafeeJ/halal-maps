@@ -50,7 +50,7 @@ export default function MapPage({ navigation }) {
     if (loading == false) {
       setUpMap();
     }
-  }, [loading])
+  }, [restaurants, loading])
 
   return (
     <SafeAreaView style={styles.SAView}>
@@ -65,7 +65,7 @@ export default function MapPage({ navigation }) {
                 key={index}
                 coordinate={point.coords}
                 title={point.restaurantData.name}
-               onCalloutPress={() => (navigation.navigate('List', {initial: false, screen: 'Restaurant', params: {restaurant: point}}))}
+               onCalloutPress={() => (navigation.navigate('Restaurant', {restaurant: point}))}
               >
                 </Marker>
             )

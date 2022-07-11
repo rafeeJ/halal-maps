@@ -41,9 +41,10 @@ export default function HomeStack() {
   function mapStack() {
     const ms = createStackNavigator()
     return (
-      <ms.Navigator screenOptions={{ headerShown: false }}>
-        <ms.Screen name="MapC" component={MapPage} />
-        <ms.Screen name="Restaurant" component={RestaurantPage} options={{ headerShown: false }} />
+      <ms.Navigator screenOptions={{ 
+        headerShown: false, presentation: 'modal', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, cardOverlayEnabled: true, gestureEnabled: true}}>
+        <ms.Screen name="MapC" component={MapPage} options={{title: 'Map'}}/>
+        <ms.Screen name="Restaurant" component={RestaurantPage} options={{ headerShown: true }} />
       </ms.Navigator>
     )
   }
@@ -51,9 +52,9 @@ export default function HomeStack() {
   function listStack() {
     const ls = createStackNavigator()
     return (
-      <ls.Navigator screenOptions={{ headerShown: false }}>
+      <ls.Navigator screenOptions={{ headerShown: true, title: 'Restaurants' }}>
         <ls.Screen name="ListC" component={ListView} />
-        <ls.Screen name="Restaurant" component={RestaurantPage} options={{ headerShown: true }} />
+        <ls.Screen name="Restaurant" component={RestaurantPage}/>
       </ls.Navigator>
     )
   }
@@ -82,7 +83,7 @@ export default function HomeStack() {
       return <Icon name={iconName} color={color} size={size} type="ionicon"/>
       }, })}>
         <Tab.Screen name="Map" component={mapStack} />
-        <Tab.Screen name="List" component={listStack} options={{ headerShown: true, title: 'Restaurants' }}/>
+        <Tab.Screen name="List" component={listStack} options={{ headerShown: false, title: 'Restaurants' }}/>
         <Tab.Screen name="Profile" component={CreatePlaceholder} listeners={({ navigation }) => ({
           tabPress: event => {
             event.preventDefault();
@@ -111,7 +112,6 @@ export default function HomeStack() {
         headerShown: false,
         presentation: "modal",
         headerMode: "none",
-        cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
         gestureEnabled: true,
         cardOverlayEnabled: true,
       })}>

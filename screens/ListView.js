@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Text, StyleSheet, StatusBar, FlatList, View } from 'react-native';
-import { ButtonGroup } from 'react-native-elements';
-import { Chip } from 'react-native-elements/dist/buttons/Chip';
 import FilterBar from '../components/FilterBar';
 
 import ListViewItem from '../components/ListViewItem'
