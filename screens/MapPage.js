@@ -28,7 +28,7 @@ export default function MapPage({ navigation }) {
     console.log("Setting up the map");
     var pointList = restaurants.map((marker, index) => {
       var point = {}
-      point["data"] = marker.restaurantData
+      point["restaurantData"] = marker.restaurantData
       if ("restaurantData" in marker) {
         var latlng = marker.restaurantData.geometry.location;
         var coords = {}
@@ -65,7 +65,7 @@ export default function MapPage({ navigation }) {
               <Marker
                 key={index}
                 coordinate={point.coords}
-                title={point.data.name}
+                title={point.restaurantData.name}
                onCalloutPress={() => (navigation.navigate('List', {initial: false, screen: 'Restaurant', params: {restaurant: point}}))}
               >
                 </Marker>
