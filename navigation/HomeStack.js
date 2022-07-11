@@ -98,7 +98,7 @@ export default function HomeStack() {
     async function check() {
       var b = await AsyncStorage.getItem("poppedUp")
       if (b == "false") {
-        Navigator.navigate("ProfileP", { screen: "Signup", params: { init: true } })
+        Navigator.navigate("ProfileP", { screen: "Region", params: { init: true } })
         await AsyncStorage.setItem("poppedUp", "true")
       }
     }

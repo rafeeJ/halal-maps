@@ -1,12 +1,11 @@
-import React, { useState, createContext, useEffect } from 'react';
-import Firebase from "../config/firebase"
+import { createContext, useEffect, useState } from 'react';
+import Firebase from "../config/firebase";
 
-import { countBy, filter, map, startCase, uniq } from 'lodash'
-import AsyncStorage from "@react-native-async-storage/async-storage";    
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { countBy, filter, map, startCase, uniq } from 'lodash';
 
 export const ResturantContext = createContext({});
 const db = Firebase.firestore();
-const funcs = Firebase.functions();
 
 import '@expo/browser-polyfill';
 
@@ -24,7 +23,7 @@ export const RestaurantProvider = ({ children }) => {
         try {
             const r = await AsyncStorage.getItem("Region")
             if (r === null) {
-                // there is no region...    
+                // there is no region...  
             } else {
                 setRegion(r)
                 console.log(r);
@@ -34,12 +33,12 @@ export const RestaurantProvider = ({ children }) => {
         }
         
         // Once we have it, what can we do. 
-        const respHTTP = await fetch("https://halal-dining-uk.web.app/createBundle/manchester")
+        const respHTTP = await fetch(`https://halal-dining-uk.web.app/createBundle/${region}`)
         let text = await respHTTP.text()
         
         const bundlecrap = new global.TextEncoder().encode(text)
         await db.loadBundle(bundlecrap)
-        const query = await db.namedQuery("latest-manchester-restaurant-query");
+        const query = await db.namedQuery(`latest-${region}-restaurant-query`);
         
         var data = [];
 
@@ -75,10 +74,10 @@ export const RestaurantProvider = ({ children }) => {
 
     useEffect(() => {
         getRestaurants()
-    }, []);
+    }, [region]);
 
     return (
-        <ResturantContext.Provider value={{ loading, restaurants, categories }}>
+        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion }}>
             {children}
         </ResturantContext.Provider>
     );

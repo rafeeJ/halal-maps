@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Text, StyleSheet, Dimensions, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import MapView, { Callout, Marker } from 'react-native-maps';
-import ProfileButton from '../components/ProfileButton';
 import { ResturantContext } from '../providers/RestaurantProvider';
 
 export default function MapPage({ navigation }) {

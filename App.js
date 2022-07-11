@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 
-import AsyncStorage from "@react-native-async-storage/async-storage"; 
 import AppLoading from 'expo-app-loading';
 
 import checkIfFirstLaunch from './config/CheckIfFirstLaunched';
 import Routes from './navigation';
-import RegionPage from './screens/onboard/RegionPage';
 
 export default function App() {
   
@@ -20,27 +17,13 @@ export default function App() {
   }
   
   useEffect(() => {
-    //AsyncStorage.removeItem("hasLaunched")
     check()
   }, []);
 
-  function finishOnboard() {
-    setFirstLaunch(false)
-  }
-
+ 
   return (
-    loading ? <AppLoading />:
-    firstLaunch ? 
-    <RegionPage callback={finishOnboard}/> :
+    loading ? 
+    <AppLoading /> :
     <Routes />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

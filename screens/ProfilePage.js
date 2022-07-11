@@ -44,6 +44,7 @@ export default function ProfilePage({ navigation }) {
           <Text>you do not have an account</Text>
           <Button title='Login' onPress={() => (navigation.navigate("Login"))} />
           <Button title='Sign-up' onPress={() => (navigation.navigate("Signup"))} />
+          <Button title='Change Region' onPress={() => (navigation.navigate("Region"))} />
         </>
       }
     </>

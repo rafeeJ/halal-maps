@@ -1,22 +1,27 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Button, Text } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { Button } from 'react-native';
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from '@react-native-picker/picker';
 
 import Firebase from '../../config/firebase';
+import { ResturantContext } from '../../providers/RestaurantProvider';
 
 const auth = Firebase.auth();
 const db = Firebase.firestore();
 
 export default function RegionPage(props) {
-    const [region, setRegion] = useState("manchester")
+    const { setRegion } = useContext(ResturantContext)
+    
+    const [selectedRegion, setSelectedRegion] = useState("manchester")
     const [regions, setRegions] = useState([])
     const [loading, setLoading] = useState(false)
 
+
     async function handleSubmit() {
-        await AsyncStorage.setItem("Region", region)
-        props.callback ? props.callback() : props.navigation.goBack()
+        await AsyncStorage.setItem("Region", selectedRegion)
+        setRegion(selectedRegion)
+        props.navigation.goBack()
     }
 
     const getRegions = async () => {
@@ -54,8 +59,8 @@ export default function RegionPage(props) {
         <>
             {loading ? <></> :
                 <Picker
-                    selectedValue={region}
-                    onValueChange={(val, idx) => setRegion(val)}
+                    selectedValue={selectedRegion}
+                    onValueChange={(val, idx) => setSelectedRegion(val)}
                 >
                     {
                         regions.map((val, idx) => {
