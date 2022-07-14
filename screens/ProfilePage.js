@@ -1,16 +1,17 @@
 import React, { useContext, useEffect } from 'react';
-import { Button, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { AuthenticatedUserContext } from '../providers/AuthenticatedUserProvider';
 
 import Firebase from '../config/firebase';
+import { Card, Text, Button, ListItem } from 'react-native-elements';
+import { View } from 'react-native';
+import { ResturantContext } from '../providers/RestaurantProvider';
 
 const auth = Firebase.auth();
 
 export default function ProfilePage({ navigation }) {
 
   const { user, setUser } = useContext(AuthenticatedUserContext)
+  const { region } = useContext(ResturantContext)
 
   const handleSignOut = async () => {
     try {
@@ -33,20 +34,56 @@ export default function ProfilePage({ navigation }) {
 
   return (
     <>
-      {user ?
-        <>
-          <Text>hello mr {user.displayName}</Text>
-          <Button title='Logout' onPress={handleSignOut} />
-          <Button title='Change Region' onPress={() => (navigation.navigate("Region", { navigation: navigation }))} />
-        </>
-        :
-        <>
-          <Text>you do not have an account</Text>
-          <Button title='Login' onPress={() => (navigation.navigate("Login"))} />
-          <Button title='Sign-up' onPress={() => (navigation.navigate("Signup"))} />
-          <Button title='Change Region' onPress={() => (navigation.navigate("Region"))} />
-        </>
-      }
+      <Card>
+        <Card.Title>Your Details</Card.Title>
+        {
+          user ?
+            <>
+              <ListItem bottomDivider topDivider>
+                <ListItem.Content style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text>Email:</Text>
+                  <Text>{user.email}</Text>
+                </ListItem.Content>
+              </ListItem>
+              <ListItem bottomDivider>
+                <ListItem.Content style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text>Name:</Text>
+                  <Text>{user.displayName}</Text>
+                </ListItem.Content>
+              </ListItem>
+            </> :
+            <Text h4> You are not signed in!</Text>
+        }
+      </Card>
+
+      <Card>
+        <Card.Title>Region</Card.Title>
+        <ListItem bottomDivider topDivider>
+          <ListItem.Content style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text>Your selected region is:</Text>
+            <Text>{region}</Text>
+          </ListItem.Content>
+        </ListItem>
+        <Button buttonStyle={{ marginTop: 10, backgroundColor: 'green' }} title='Change Region' onPress={() => (navigation.navigate("Region"))} />
+      </Card>
+
+      <Card>
+        {
+          user ?
+            <Button buttonStyle={{ marginBottom: 6, backgroundColor: 'red' }} title='Logout' onPress={handleSignOut} /> :
+            
+            <View style={{ display: 'flex', justifyContent: 'center' }}>
+              <Button buttonStyle={{ marginBottom: 2 }} title='Sign-up' onPress={() => (navigation.navigate("Signup"))} />
+              <View style={{ display: 'flex', justifyContent: 'center' }}>
+                <Text h4 style={{ textAlign: 'center' }}>Or</Text>
+              </View>
+              <Button buttonStyle={{ marginBottom: 2, backgroundColor: 'navy' }} title='Login' onPress={() => (navigation.navigate("Login"))} />
+
+            </View>
+        }
+      </Card>
+
+
     </>
   );
 }

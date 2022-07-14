@@ -77,7 +77,7 @@ export const RestaurantProvider = ({ children }) => {
     }, [region]);
 
     return (
-        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion }}>
+        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion, region }}>
             {children}
         </ResturantContext.Provider>
     );
