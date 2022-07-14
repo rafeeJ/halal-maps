@@ -30,7 +30,7 @@ export default function HomeStack() {
     const ps = createStackNavigator()
     return (
       <ps.Navigator>
-        <ps.Screen name="ProfileP" component={ProfilePage} options={{headerBackVisible: false, headerRight: close, headerLeft: false}}/>
+        <ps.Screen name="ProfileP" component={ProfilePage} options={{headerBackVisible: false, headerRight: close, headerLeft: false, title: 'Profile'}}/>
         <ps.Screen name="Region" component={RegionPage} />
         <ps.Screen name="Login" component={LoginScreen} />
         <ps.Screen name="Signup" component={SignupScreen} />
@@ -44,7 +44,7 @@ export default function HomeStack() {
       <ms.Navigator screenOptions={{ 
         headerShown: false, presentation: 'modal', cardStyleInterpolator: CardStyleInterpolators.forVerticalIOS, cardOverlayEnabled: true, gestureEnabled: true}}>
         <ms.Screen name="MapC" component={MapPage} options={{title: 'Map'}}/>
-        <ms.Screen name="Restaurant" component={RestaurantPage} options={{ headerShown: true }} />
+        <ms.Screen name="Restaurant" component={RestaurantPage} options={{ headerShown: true, headerLeft: false, headerRight: close }} />
       </ms.Navigator>
     )
   }
@@ -76,7 +76,7 @@ export default function HomeStack() {
           case 'List':
             iconName = focused ? 'list' : 'list-outline'
             break;
-          case 'Profile':
+          case 'ProfileTab':
             iconName = focused ? 'person' : 'person-outline'
             break;
         }
@@ -84,10 +84,10 @@ export default function HomeStack() {
       }, })}>
         <Tab.Screen name="Map" component={mapStack} />
         <Tab.Screen name="List" component={listStack} options={{ headerShown: false, title: 'Restaurants' }}/>
-        <Tab.Screen name="Profile" component={CreatePlaceholder} listeners={({ navigation }) => ({
+        <Tab.Screen name="ProfileTab" options={{title: 'Profile'}} component={CreatePlaceholder} listeners={({ navigation }) => ({
           tabPress: event => {
             event.preventDefault();
-            navigation.navigate("ProfileP")
+            navigation.navigate("ProfileStack")
           }
         })} />
       </Tab.Navigator>
@@ -99,7 +99,7 @@ export default function HomeStack() {
     async function check() {
       var b = await AsyncStorage.getItem("poppedUp")
       if (b == "false") {
-        Navigator.navigate("ProfileP", { screen: "Region", params: { init: true } })
+        Navigator.navigate("ProfileStack", { screen: "Region", params: { init: true } })
         await AsyncStorage.setItem("poppedUp", "true")
       }
     }
@@ -116,7 +116,7 @@ export default function HomeStack() {
         cardOverlayEnabled: true,
       })}>
         <Stack.Screen name="Main" component={mainStack} />
-        <Stack.Screen name="ProfileP" component={profileStack} />
+        <Stack.Screen name="ProfileStack" component={profileStack} options={{title: 'Profile'}}/>
     </Stack.Navigator>
   );
 }

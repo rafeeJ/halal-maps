@@ -34,7 +34,7 @@ export default function FilterBar({ setState, cats }) {
     <View
       style={styles.container}
     >
-      <Chip title={"Clear"} onPress={() => handleClear()}/>
+      <Chip buttonStyle={{backgroundColor: 'red'}} title={"Clear"} onPress={() => handleClear()}/>
       <FlatList keyExtractor={(item, index) => index} showsHorizontalScrollIndicator={false} data={cats} renderItem={renderPill} horizontal={true}/>
     </View>
   );

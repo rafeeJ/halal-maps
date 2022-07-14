@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
-import React, { useContext, useEffect, useState } from 'react';
-import { Text, StyleSheet, StatusBar, FlatList, View, Button, Platform, Linking } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useState } from 'react';
+import { Button, Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Card, Text } from 'react-native-elements';
 
 export default function RestaurantPage(props) {
     const route = useRoute()
@@ -24,15 +24,34 @@ export default function RestaurantPage(props) {
     useEffect(() => {
         const { restaurant } = route.params
         setRestaurant(restaurant)
+        console.log(restaurant);
     }, [])
 
     return (
         <View style={styles.SAView}>
-            <Text>Hello {resta?.restaurantData?.name}</Text>
-            { resta?.restaurantData?.geometry.location ? 
-            <Button title="Get directions!" onPress={openMap}/> :
-            <></>
-            }
+            <Card>
+                <View style={{ padding: 12, alignContent: 'center' }}>
+                    <Text h2>{resta?.restaurantData?.name}</Text>
+                </View>
+                <Card.Divider />
+                <Text h4>Address</Text>
+                <Text>{resta?.restaurantData?.formatted_address}</Text>
+                <View>
+                    {
+                        resta?.restaurantData?.geometry.location ?
+                            <Button title="Get directions!" onPress={openMap} /> :
+                            <></>
+                    }
+                </View>
+                <Card.Divider />
+                <View>
+                    <Text>Type:</Text>
+                    {resta?.restaurantData?.types.map((item, idx) => {
+                        return (<Text key={idx}>{"-" + " "}{item}</Text>)
+
+                    })}
+                </View>
+            </Card>
         </View>
     );
 }
