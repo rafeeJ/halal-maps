@@ -1,11 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
-import { Button } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from '@react-native-picker/picker';
 
 import Firebase from '../../config/firebase';
 import { ResturantContext } from '../../providers/RestaurantProvider';
+
+import { startCase } from 'lodash'
+import { Button, Card } from 'react-native-elements';
 
 const auth = Firebase.auth();
 const db = Firebase.firestore();
@@ -57,19 +60,24 @@ export default function RegionPage(props) {
 
     return (
         <>
-            {loading ? <></> :
+        <Card>
+            <Card.Title>Available Regions</Card.Title>
+            {loading ? <ActivityIndicator /> :
                 <Picker
-                    selectedValue={selectedRegion}
-                    onValueChange={(val, idx) => setSelectedRegion(val)}
+                selectedValue={selectedRegion}
+                onValueChange={(val, idx) => setSelectedRegion(val)}
                 >
                     {
                         regions.map((val, idx) => {
-                            return <Picker.Item key={idx} label={val.region} value={val.region} />
+                            return <Picker.Item key={idx} label={startCase(val.region)} value={val.region} />
                         })
                     }
                 </Picker>}
-
-            <Button title='Submit' disabled={loading} onPress={() => handleSubmit()} />
-        </>
+        </Card>
+            <Card>
+                
+            <Button title='Save Region' disabled={loading} onPress={() => handleSubmit()} />
+        </Card>
+                    </>
     );
 }

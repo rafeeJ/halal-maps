@@ -6,6 +6,8 @@ import { Card, Text, Button, ListItem } from 'react-native-elements';
 import { View } from 'react-native';
 import { ResturantContext } from '../providers/RestaurantProvider';
 
+import { startCase } from 'lodash';
+
 const auth = Firebase.auth();
 
 export default function ProfilePage({ navigation }) {
@@ -61,7 +63,7 @@ export default function ProfilePage({ navigation }) {
         <ListItem bottomDivider topDivider>
           <ListItem.Content style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text>Your selected region is:</Text>
-            <Text>{region}</Text>
+            <Text>{startCase(region)}</Text>
           </ListItem.Content>
         </ListItem>
         <Button buttonStyle={{ marginTop: 10, backgroundColor: 'green' }} title='Change Region' onPress={() => (navigation.navigate("Region"))} />
