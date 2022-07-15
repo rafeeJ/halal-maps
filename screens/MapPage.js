@@ -1,5 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
+import { Icon } from 'react-native-elements';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ResturantContext } from '../providers/RestaurantProvider';
@@ -67,6 +68,7 @@ export default function MapPage({ navigation }) {
                 title={point.restaurantData.name}
                onCalloutPress={() => (navigation.navigate('Restaurant', {restaurant: point}))}
               >
+                <Icon type="feather" name='hexagon' color={'navy'} solid={true}/>
                 </Marker>
             )
           })
