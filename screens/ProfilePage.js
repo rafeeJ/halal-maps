@@ -52,7 +52,7 @@ export default function ProfilePage({ navigation }) {
                 </ListItem.Content>
               </ListItem>
             </> :
-            <Text h4> You are not signed in!</Text>
+            <Text h4 style={{textAlign: 'center'}}> You are not signed in!</Text>
         }
       </Card>
 
@@ -73,7 +73,7 @@ export default function ProfilePage({ navigation }) {
             <Button buttonStyle={{ marginBottom: 6, backgroundColor: 'red' }} title='Logout' onPress={handleSignOut} /> :
             
             <View style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button buttonStyle={{ marginBottom: 2 }} title='Sign-up' onPress={() => (navigation.navigate("Signup"))} />
+              <Button buttonStyle={{ marginBottom: 2 }} title='Create a new account' onPress={() => (navigation.navigate("Signup"))} />
               <View style={{ display: 'flex', justifyContent: 'center' }}>
                 <Text h4 style={{ textAlign: 'center' }}>Or</Text>
               </View>

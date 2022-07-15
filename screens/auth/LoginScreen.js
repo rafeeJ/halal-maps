@@ -1,13 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
+import { StyleSheet, View, Button as RNButton } from 'react-native';
 
 import AuthButton from '../../components/AuthButton'
 import InputField from '../../components/InputField'
 import ErrorMessage from '../../components/ErrorMessage'
 
 import Firebase from '../../config/firebase';
+import { Button, Card, Text } from 'react-native-elements';
 
 const auth = Firebase.auth();
 
@@ -51,7 +52,8 @@ export default function LoginScreen({ navigation }) {
     return (
         <View style={styles.container}>
             <StatusBar style='dark-content' />
-            <Text style={styles.title}>Login</Text>
+            <Card>
+                <Card.Title>Sign into an existing account</Card.Title>
             <InputField
                 inputStyle={{
                     fontSize: 14
@@ -89,21 +91,26 @@ export default function LoginScreen({ navigation }) {
                 handlePasswordVisibility={handlePasswordVisibility}
             />
             {loginError ? <ErrorMessage error={loginError} visible={true} /> : null}
-            <AuthButton
-                onPress={onLogin}
+            </Card>
+            <Card>
+            <Button
+                onPress={() => onLogin()}
                 backgroundColor='#f57c00'
                 title='Login'
                 tileColor='#fff'
                 titleSize={20}
                 containerStyle={{
-                    marginBottom: 24
+                    marginBottom: 2
                 }}
             />
-            <RNButton
+            </Card>
+            <Card>
+            <Button
                 onPress={() => navigation.replace('Signup')}
-                title='Go to Signup'
+                title='Create a new account'
                 color='#fff'
             />
+            </Card>
         </View>
     );
 }
@@ -111,9 +118,6 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#e93b81',
-        paddingTop: 50,
-        paddingHorizontal: 12
     },
     title: {
         fontSize: 24,
