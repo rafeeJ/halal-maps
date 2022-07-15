@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Button, FAB, Icon, SpeedDial, Text } from 'react-native-elements';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ResturantContext } from '../providers/RestaurantProvider';
@@ -8,20 +8,21 @@ import { ResturantContext } from '../providers/RestaurantProvider';
 export default function MapPage({ navigation }) {
 
   const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
-  
+
   const { loading, restaurants } = useContext(ResturantContext)
-  
+
   const mapR = useRef(null)
 
   const [points, setPoints] = useState([])
-  
+  const [open, setOpen] = useState(false)
+
   function fitAllMarkers() {
     var latLngs = points.map((val, idx) => {
       if (val.coords) {
         return val.coords
       }
     }).filter(p => p)
-    mapR.current.fitToCoordinates(latLngs, {edgePadding: DEFAULT_PADDING, animated: true})
+    mapR.current.fitToCoordinates(latLngs, { edgePadding: DEFAULT_PADDING, animated: true })
   }
 
   function setUpMap() {
@@ -46,7 +47,7 @@ export default function MapPage({ navigation }) {
       fitAllMarkers()
     }
   }, [points])
-  
+
   useEffect(() => {
     if (loading == false) {
       setUpMap();
@@ -55,9 +56,9 @@ export default function MapPage({ navigation }) {
 
   return (
     <SafeAreaView style={styles.SAView}>
-      <MapView 
-      ref={mapR}
-      style={styles.map}>
+      <MapView
+        ref={mapR}
+        style={styles.map}>
         {loading ?
           <></> :
           points.map((point, index) => {
@@ -66,18 +67,38 @@ export default function MapPage({ navigation }) {
                 key={index}
                 coordinate={point.coords}
                 title={point.restaurantData.name}
-               onCalloutPress={() => (navigation.navigate('Restaurant', {restaurant: point}))}
+                onCalloutPress={() => (navigation.navigate('Restaurant', { restaurant: point }))}
               >
-                <Icon type="feather" name='hexagon' color={'navy'} solid={true}/>
-                </Marker>
+                <Icon type="feather" name='hexagon' color={'navy'} solid={true} />
+              </Marker>
             )
           })
         }
       </MapView>
       <View pointerEvents='box-none' style={styles.innerView}>
         <View style={styles.topBar}>
+          <View>
+
+            {/* <FAB title={'Reset Zoom'} color={'salmon'} onPress={() => fitAllMarkers()} /> */}
+          </View>
         </View>
       </View>
+      <SpeedDial isOpen={open}
+        color={'salmon'}
+        icon={<Icon type='feather' name='settings' color={'white'} />}
+        openIcon={{ name: 'close', color: '#fff' }}
+        onOpen={() => setOpen(!open)}
+        onClose={() => setOpen(!open)}>
+        <SpeedDial.Action 
+        color='tomato'
+        title={'Reset Zoom'} 
+        icon={<Icon type='feather' name='zoom-out' color={'white'} />} 
+          onPress={() => {
+            setOpen(!open);
+            fitAllMarkers()
+          }}
+        />
+      </SpeedDial>
     </SafeAreaView>
   );
 }
@@ -85,14 +106,13 @@ export default function MapPage({ navigation }) {
 const styles = StyleSheet.create({
   SAView: {
     flex: 1,
-    backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
   },
   innerView: {
     position: 'absolute',
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column-reverse',
     width: '100%',
     height: '100%'
   },
