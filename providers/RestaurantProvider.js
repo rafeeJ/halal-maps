@@ -15,9 +15,12 @@ export const RestaurantProvider = ({ children }) => {
     const [categories, setCategories] = useState([])
     const [loading, setLoading] = useState(false);
     const [region, setRegion] = useState({});
+    const [location, setLocation] = useState(null)
 
     const getRestaurants = async () => {
         setLoading(true);
+        console.log(`Getting restaurants from database for region ${region}`)
+        console.log(region)
         
         // We need to get the region.
         try {
@@ -72,12 +75,28 @@ export const RestaurantProvider = ({ children }) => {
         setLoading(false);
     }
 
+
+    const checkLocation = async () => {
+        const locationFromStorage = await AsyncStorage.getItem("Location")
+        if (locationFromStorage === null) {
+            console.debug("Location has not been set.")
+        } else {
+            setLocation(locationFromStorage)
+            console.debug(`Location has been set to ${ locationFromStorage }`)
+            await getRestaurants()
+        }
+    }
+
+    // useEffect(() => {
+    //     checkLocation()
+    // }, []);
+
     useEffect(() => {
-        getRestaurants()
-    }, [region]);
+        checkLocation();
+    }, [location])
 
     return (
-        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion, region }}>
+        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion, region, location, setLocation }}>
             {children}
         </ResturantContext.Provider>
     );

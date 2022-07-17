@@ -14,8 +14,8 @@ const auth = Firebase.auth();
 const db = Firebase.firestore();
 
 export default function RegionPage(props) {
-    const { setRegion } = useContext(ResturantContext)
-    
+    const { setRegion, setLocation } = useContext(ResturantContext)
+
     const [selectedRegion, setSelectedRegion] = useState("manchester")
     const [regions, setRegions] = useState([])
     const [loading, setLoading] = useState(false)
@@ -23,7 +23,9 @@ export default function RegionPage(props) {
 
     async function handleSubmit() {
         await AsyncStorage.setItem("Region", selectedRegion)
+        await AsyncStorage.setItem("Location", selectedRegion)
         setRegion(selectedRegion)
+        setLocation(selectedRegion)
         props.navigation.goBack()
     }
 
@@ -60,24 +62,27 @@ export default function RegionPage(props) {
 
     return (
         <>
-        <Card>
-            <Card.Title>Available Regions</Card.Title>
-            {loading ? <ActivityIndicator /> :
-                <Picker
-                selectedValue={selectedRegion}
-                onValueChange={(val, idx) => setSelectedRegion(val)}
-                >
-                    {
-                        regions.map((val, idx) => {
-                            return <Picker.Item key={idx} label={startCase(val.region)} value={val.region} />
-                        })
-                    }
-                </Picker>}
-        </Card>
             <Card>
-                
-            <Button title='Save Region' disabled={loading} onPress={() => handleSubmit()} />
-        </Card>
-                    </>
+                <Card.Title>Available Regions</Card.Title>
+                {loading ? <ActivityIndicator /> :
+                    <Picker
+                        selectedValue={selectedRegion}
+                        onValueChange={(val, idx) => setSelectedRegion(val)}
+                    >
+                        {
+                            regions.map((val, idx) => {
+                                return <Picker.Item key={idx} label={startCase(val.region)} value={val.region} />
+                            })
+                        }
+                    </Picker>}
+            </Card>
+            <Card>
+
+                <Button title='Save Region' disabled={loading} onPress={() => handleSubmit()} />
+            </Card>
+            <Card>
+                <Button title='Use current location' disabled={loading} onPress={() => handleSubmit()} />
+            </Card>
+        </>
     );
 }

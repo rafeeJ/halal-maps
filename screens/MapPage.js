@@ -3,13 +3,14 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import { Button, FAB, Icon, SpeedDial, Text } from 'react-native-elements';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import NoLocationScreen from '../components/NoLocationScreen';
 import { ResturantContext } from '../providers/RestaurantProvider';
 
 export default function MapPage({ navigation }) {
 
   const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
 
-  const { loading, restaurants } = useContext(ResturantContext)
+  const { loading, restaurants, location } = useContext(ResturantContext)
 
   const mapR = useRef(null)
 
@@ -54,8 +55,11 @@ export default function MapPage({ navigation }) {
     }
   }, [restaurants, loading])
 
+
   return (
     <SafeAreaView style={styles.SAView}>
+      { location ? 
+      <>
       <MapView
         ref={mapR}
         style={styles.map}>
@@ -75,14 +79,6 @@ export default function MapPage({ navigation }) {
           })
         }
       </MapView>
-      <View pointerEvents='box-none' style={styles.innerView}>
-        <View style={styles.topBar}>
-          <View>
-
-            {/* <FAB title={'Reset Zoom'} color={'salmon'} onPress={() => fitAllMarkers()} /> */}
-          </View>
-        </View>
-      </View>
       <SpeedDial isOpen={open}
         color={'salmon'}
         icon={<Icon type='feather' name='settings' color={'white'} />}
@@ -99,6 +95,8 @@ export default function MapPage({ navigation }) {
           }}
         />
       </SpeedDial>
+      </> :
+      <NoLocationScreen /> }
     </SafeAreaView>
   );
 }

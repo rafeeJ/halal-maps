@@ -1,13 +1,15 @@
+import AppLoading from 'expo-app-loading';
 import React, { useContext, useEffect, useState } from 'react';
 import { Text, StyleSheet, StatusBar, FlatList, View } from 'react-native';
 import FilterBar from '../components/FilterBar';
 
 import ListViewItem from '../components/ListViewItem'
+import NoLocationScreen from '../components/NoLocationScreen';
 import { ResturantContext } from '../providers/RestaurantProvider';
 
 export default function ListView() {
 
-  const { restaurants, categories } = useContext(ResturantContext)
+  const { restaurants, categories, location } = useContext(ResturantContext)
 
   const [filters, setFilters] = useState([])
   const [filteredData, setFilteredData] = useState([])
@@ -42,6 +44,10 @@ export default function ListView() {
   }, [filters])
 
   const renderItem = ({ item }) => <ListViewItem key={item.id} item={item} />
+
+  if (location === null) {
+    return(<NoLocationScreen />)
+  }
 
   return (
     <View style={styles.SAView}>

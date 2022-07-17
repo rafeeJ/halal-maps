@@ -95,17 +95,7 @@ export default function HomeStack() {
   }
 
   const Navigator = useNavigation()
-  useEffect(() => {
-    async function check() {
-      var b = await AsyncStorage.getItem("poppedUp")
-      if (b == "false") {
-        Navigator.navigate("ProfileStack", { screen: "Region", params: { init: true } })
-        await AsyncStorage.setItem("poppedUp", "true")
-      }
-    }
-    check()
-  }, [])
-
+  
   return (
     <Stack.Navigator
       screenOptions={({ route }) => ({

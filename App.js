@@ -4,6 +4,7 @@ import AppLoading from 'expo-app-loading';
 
 import checkIfFirstLaunch from './config/CheckIfFirstLaunched';
 import Routes from './navigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
   
@@ -17,13 +18,15 @@ export default function App() {
   }
   
   useEffect(() => {
+    AsyncStorage.clear()
     check()
   }, []);
 
+  if (loading) {
+    return(<AppLoading />)
+  }
  
   return (
-    loading ? 
-    <AppLoading /> :
     <Routes />
   );
 }
