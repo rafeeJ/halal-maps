@@ -1,13 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, Button as RNButton } from 'react-native';
+import { StyleSheet, View, Button as RNButton } from 'react-native';
 
 import AuthButton from '../../components/AuthButton'
 import InputField from '../../components/InputField'
 import ErrorMessage from '../../components/ErrorMessage'
 
 import Firebase from '../../config/firebase';
+import { Button, Card, Text } from 'react-native-elements';
 
 const auth = Firebase.auth();
 
@@ -55,7 +56,8 @@ export default function SignupScreen({ route, navigation }, props) {
   return (
     <View style={styles.container}>
       <StatusBar style='dark-content' />
-      <Text style={styles.title}>Create new account</Text>
+      <Card>
+        <Card.Title>Create new account</Card.Title>
       <InputField
         inputStyle={{
           fontSize: 14
@@ -110,31 +112,29 @@ export default function SignupScreen({ route, navigation }, props) {
         handlePasswordVisibility={handlePasswordVisibility}
       />
       {signupError ? <ErrorMessage error={signupError} visible={true} /> : null}
-      <AuthButton
-        onPress={onHandleSignup}
+      </Card>
+      <Card>
+        <View>
+      <Button
+        onPress={() => onHandleSignup()}
         backgroundColor='#f57c00'
-        title='Signup'
+        title='Complete Signup'
         tileColor='#fff'
         titleSize={20}
         containerStyle={{
-          marginBottom: 24
+          marginBottom: 2
         }}
       />
-      <RNButton
-        onPress={() => navigation.replace('Login', { init: init })}
+      {/* <View style={{ display: 'flex', justifyContent: 'center' }}>
+                <Text h4 style={{ textAlign: 'center' }}>Or</Text>
+              </View>
+      <Button
+        onPress={() => navigation.replace('Login')}
         title='Go to Login'
         color='#fff'
-      />
-      {
-        init ?
-          <RNButton
-            onPress={() => navigation.navigate('Map')}
-            title='No, thank you.'
-            color='#fff'
-          />
-          :
-          <></>
-      }
+      /> */}
+      </View>
+      </Card>
     </View>
   );
 }
@@ -142,9 +142,6 @@ export default function SignupScreen({ route, navigation }, props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e93b81',
-    paddingTop: 50,
-    paddingHorizontal: 12
   },
   title: {
     fontSize: 24,

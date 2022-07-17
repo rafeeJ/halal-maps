@@ -1,26 +1,69 @@
-import React, { useContext } from 'react';
-import { Text, StyleSheet, StatusBar, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useContext, useEffect, useState } from 'react';
+import { Text, StyleSheet, StatusBar, FlatList, View } from 'react-native';
+import FilterBar from '../components/FilterBar';
 
 import ListViewItem from '../components/ListViewItem'
 import { ResturantContext } from '../providers/RestaurantProvider';
 
 export default function ListView() {
 
-  const { restaurants } = useContext(ResturantContext)
+  const { restaurants, categories } = useContext(ResturantContext)
 
-  const renderItem = ({ item }) => <ListViewItem item={item}/>
+  const [filters, setFilters] = useState([])
+  const [filteredData, setFilteredData] = useState([])
+
+  useEffect(() => {
+    if (filters.length > 0) {
+      console.log(`updating filter with: ${filters}`);
+
+      let tempFilter = restaurants.filter(function (data) {
+        let toFilter = false
+        let curF = filters[0]
+        
+        if ("zabData" in data) {
+          if (data.zabData.categories.includes(curF)) {
+            toFilter = true
+          }
+        }
+
+        if ("uberData" in data) {
+          if (data.uberData.categories.includes(curF)) {
+            toFilter = true
+          }
+        }
+
+        return toFilter
+      })
+
+      setFilteredData(tempFilter)
+    } else {
+      setFilteredData([])
+    }
+  }, [filters])
+
+  const renderItem = ({ item }) => <ListViewItem key={item.id} item={item} />
 
   return (
-    <SafeAreaView style={styles.SAView}>
-      <FlatList data={restaurants} renderItem={renderItem} keyExtractor={item => item.id}/>
-    </SafeAreaView>
+    <View style={styles.SAView}>
+      <FilterBar cats={categories} setState={setFilters} />
+      <FlatList 
+      initialNumToRender={7}
+      maxToRenderPerBatch={6}
+      removeClippedSubviews={true}
+      style={styles.list} 
+      data={filteredData && filteredData.length > 0 ? filteredData : restaurants} 
+      renderItem={renderItem} 
+      keyExtractor={(item, index) => index} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   SAView: {
-    flex: 1, 
+    flex: 1,
     marginTop: StatusBar.currentHeight || 0,
+  },
+  list: {
+    paddingHorizontal: 5
   }
 })

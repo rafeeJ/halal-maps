@@ -1,19 +1,20 @@
-import React, { useState, createContext, useEffect } from 'react';
-import Firebase from "../config/firebase"
+import { createContext, useEffect, useState } from 'react';
+import Firebase from "../config/firebase";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";    
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { countBy, filter, map, startCase, uniq } from 'lodash';
 
 export const ResturantContext = createContext({});
 const db = Firebase.firestore();
-const funcs = Firebase.functions();
 
 import '@expo/browser-polyfill';
 
 export const RestaurantProvider = ({ children }) => {
     
     const [restaurants, setRestaurants] = useState([]);
+    const [categories, setCategories] = useState([])
     const [loading, setLoading] = useState(false);
-    const [region, setRegion] = useState({})
+    const [region, setRegion] = useState({});
 
     const getRestaurants = async () => {
         setLoading(true);
@@ -22,41 +23,61 @@ export const RestaurantProvider = ({ children }) => {
         try {
             const r = await AsyncStorage.getItem("Region")
             if (r === null) {
-                // there is no region...    
+                // there is no region...  
             } else {
                 setRegion(r)
                 console.log(r);
             }
         } catch (error) {
-
+            console.log(error);
         }
+        
         // Once we have it, what can we do. 
-
-        const respHTTP = await fetch("https://halal-dining-uk.web.app/createBundle/manchester")
+        const respHTTP = await fetch(`https://halal-dining-uk.web.app/createBundle/${region}`)
         let text = await respHTTP.text()
         
         const bundlecrap = new global.TextEncoder().encode(text)
         await db.loadBundle(bundlecrap)
+        const query = await db.namedQuery(`latest-${region}-restaurant-query`);
         
         var data = [];
-        const query = await db.namedQuery("latest-manchester-restaurant-query");
+
+        let tempCats = []
+        
         await query.get({source: "cache"})
             .then((snap) => {
                 snap.forEach((doc) => {
-                    data.push(doc.data())
+                    let d = doc.data()
+                    data.push(d)
+                    
+                    if ("zabData" in d) {
+                        tempCats.push(...d.zabData.categories)                        
+                    }
+                    if ("uberData" in d) {
+                        tempCats.push(...d.uberData.categories)
+                    }                
                 })
-            });
+            });    
+            
+        let x = filter(map(countBy(tempCats), function(v, k, c){
+            if (v > 5) {
+                return startCase(k)
+            } else {
+                return false
+            }
+        }), (v, k, c) => (v != false))
         
+        setCategories(uniq(x));
         setRestaurants(data);
         setLoading(false);
     }
 
     useEffect(() => {
         getRestaurants()
-    }, []);
+    }, [region]);
 
     return (
-        <ResturantContext.Provider value={{ loading, restaurants }}>
+        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion, region }}>
             {children}
         </ResturantContext.Provider>
     );
