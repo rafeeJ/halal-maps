@@ -69,7 +69,7 @@ export default function MapPage({ navigation }) {
                 title={point.restaurantData.name}
                 onCalloutPress={() => (navigation.navigate('Restaurant', { restaurant: point }))}
               >
-                <Icon type="feather" name='hexagon' color={'navy'} solid={true} />
+                <Icon type="feather" name='disc' color={'navy'} solid={true} />
               </Marker>
             )
           })

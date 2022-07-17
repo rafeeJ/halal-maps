@@ -1,7 +1,7 @@
 import { useRoute } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import { Button, Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { Card, Text } from 'react-native-elements';
+import { Linking, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { Card, Text, Button } from 'react-native-elements';
 
 export default function RestaurantPage(props) {
     const route = useRoute()
@@ -24,7 +24,6 @@ export default function RestaurantPage(props) {
     useEffect(() => {
         const { restaurant } = route.params
         setRestaurant(restaurant)
-        console.log(restaurant);
     }, [])
 
     return (
@@ -33,7 +32,8 @@ export default function RestaurantPage(props) {
                 <View style={{ padding: 12, alignContent: 'center' }}>
                     <Text h2>{resta?.restaurantData?.name}</Text>
                 </View>
-                <Card.Divider />
+            </Card>
+            <Card>
                 <Text h4>Address</Text>
                 <Text>{resta?.restaurantData?.formatted_address}</Text>
                 <View>
@@ -43,7 +43,8 @@ export default function RestaurantPage(props) {
                             <></>
                     }
                 </View>
-                <Card.Divider />
+            </Card>
+            <Card>
                 <View>
                     <Text>Type:</Text>
                     {resta?.restaurantData?.types.map((item, idx) => {
