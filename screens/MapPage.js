@@ -96,9 +96,11 @@ export default function MapPage({ navigation }) {
             )
           })
         }
+        { currentLocation ? 
         <Marker coordinate={currentLocation} style={{ zIndex: 1000}}>
         <Icon type="feather" name='user' color={'white'} solid={true} size={30} backgroundColor={'salmon'} borderRadius={100}/>
-        </Marker>
+        </Marker> : <></>
+        }
       </MapView>
       <View pointerEvents='box-none' style={styles.innerView}>
         <View style={styles.topBar}>
