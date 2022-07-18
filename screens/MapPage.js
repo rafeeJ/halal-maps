@@ -5,16 +5,19 @@ import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NoLocationScreen from '../components/NoLocationScreen';
 import { ResturantContext } from '../providers/RestaurantProvider';
+import * as Location from 'expo-location';
 
 export default function MapPage({ navigation }) {
 
   const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
+  const CURRENT_LOCATION_PADDING = { top: 1000, right: 1000, bottom: 1000, left: 1000 };
 
   const { loading, restaurants, location } = useContext(ResturantContext)
 
   const mapR = useRef(null)
 
   const [points, setPoints] = useState([])
+  const [currentLocation, setCurrentLocation] = useState(null)
   const [open, setOpen] = useState(false)
 
   function fitAllMarkers() {
@@ -24,6 +27,20 @@ export default function MapPage({ navigation }) {
       }
     }).filter(p => p)
     mapR.current.fitToCoordinates(latLngs, { edgePadding: DEFAULT_PADDING, animated: true })
+  }
+
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== "granted") {
+      // Setup a modal.
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({})
+    let coord = {latitude: location.coords.latitude, longitude: location.coords.longitude}
+    mapR.current.fitToCoordinates([coord], {edgePadding: CURRENT_LOCATION_PADDING, animated: false})
+    
+    setCurrentLocation(coord)
   }
 
   function setUpMap() {
@@ -61,6 +78,7 @@ export default function MapPage({ navigation }) {
       { location ? 
       <>
       <MapView
+        maxZoomLevel={15}
         ref={mapR}
         style={styles.map}>
         {loading ?
@@ -78,23 +96,15 @@ export default function MapPage({ navigation }) {
             )
           })
         }
+        <Marker coordinate={currentLocation} style={{ zIndex: 1000}}>
+        <Icon type="feather" name='user' color={'white'} solid={true} size={30} backgroundColor={'salmon'} borderRadius={100}/>
+        </Marker>
       </MapView>
-      <SpeedDial isOpen={open}
-        color={'salmon'}
-        icon={<Icon type='feather' name='settings' color={'white'} />}
-        openIcon={{ name: 'close', color: '#fff' }}
-        onOpen={() => setOpen(!open)}
-        onClose={() => setOpen(!open)}>
-        <SpeedDial.Action 
-        color='tomato'
-        title={'Reset Zoom'} 
-        icon={<Icon type='feather' name='zoom-out' color={'white'} />} 
-          onPress={() => {
-            setOpen(!open);
-            fitAllMarkers()
-          }}
-        />
-      </SpeedDial>
+      <View pointerEvents='box-none' style={styles.innerView}>
+        <View style={styles.topBar}>
+            <FAB color={'salmon'} onPress={() => getCurrentLocation()} icon={<Icon type='feather' name='navigation' color={'white'} />} />
+        </View>
+      </View>
       </> :
       <NoLocationScreen /> }
     </SafeAreaView>

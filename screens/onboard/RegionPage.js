@@ -8,7 +8,9 @@ import Firebase from '../../config/firebase';
 import { ResturantContext } from '../../providers/RestaurantProvider';
 
 import { startCase } from 'lodash'
-import { Button, Card } from 'react-native-elements';
+import { Button, Card, Text } from 'react-native-elements';
+
+import * as Location from 'expo-location';
 
 const auth = Firebase.auth();
 const db = Firebase.firestore();
@@ -20,6 +22,10 @@ export default function RegionPage(props) {
     const [regions, setRegions] = useState([])
     const [loading, setLoading] = useState(false)
 
+    const [locationStatus, setLocationStatus] = useState(null)
+    const [geoLocation, setGeoLocation] = useState(null)
+    const [useLocation, setUseLocation] = useState(true)
+
 
     async function handleSubmit() {
         await AsyncStorage.setItem("Region", selectedRegion)
@@ -27,6 +33,20 @@ export default function RegionPage(props) {
         setRegion(selectedRegion)
         setLocation(selectedRegion)
         props.navigation.goBack()
+    }
+
+    var handleCurrentLocation = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+            setLocationStatus('Please enable location in iOS settings')
+            setUseLocation(false)
+            return
+        }
+
+        let location = await Location.getCurrentPositionAsync({})
+        setGeoLocation(location)
+        console.log(location)
+        setLocationStatus('Permissions are allows, and we have perms')
     }
 
     const getRegions = async () => {
@@ -77,11 +97,12 @@ export default function RegionPage(props) {
                     </Picker>}
             </Card>
             <Card>
-
                 <Button title='Save Region' disabled={loading} onPress={() => handleSubmit()} />
             </Card>
             <Card>
-                <Button title='Use current location' disabled={loading} onPress={() => handleSubmit()} />
+                <Button title='Use current location' disabled={!useLocation} onPress={() => handleCurrentLocation()} />
+                { locationStatus ? <Text> {locationStatus} </Text> : <Text>Use the button above to use your current location</Text>}
+                
             </Card>
         </>
     );

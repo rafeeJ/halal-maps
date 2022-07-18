@@ -20,19 +20,19 @@ export const RestaurantProvider = ({ children }) => {
     const getRestaurants = async () => {
         setLoading(true);
         console.log(`Getting restaurants from database for region ${region}`)
-        console.log(region)
         
         // We need to get the region.
         try {
             const r = await AsyncStorage.getItem("Region")
             if (r === null) {
-                // there is no region...  
+                conesole.debug(`There is no region set in AsyncStorage`);
+                return;
             } else {
                 setRegion(r)
-                console.log(r);
+                console.debug(`Region has been set to ${r}`)
             }
         } catch (error) {
-            console.log(error);
+            console.debug(`There has been an error with AsyncStorage${error}`);
         }
         
         // Once we have it, what can we do. 
@@ -73,6 +73,10 @@ export const RestaurantProvider = ({ children }) => {
         setCategories(uniq(x));
         setRestaurants(data);
         setLoading(false);
+    }
+
+    const getResurantsFromFirestore = async () => {
+
     }
 
 
