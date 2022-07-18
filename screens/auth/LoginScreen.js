@@ -1,16 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { StyleSheet, View, Button as RNButton } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import AuthButton from '../../components/AuthButton'
 import InputField from '../../components/InputField'
 import ErrorMessage from '../../components/ErrorMessage'
 
-import Firebase from '../../config/firebase';
 import { Button, Card, Text } from 'react-native-elements';
 
-const auth = Firebase.auth();
+import auth from '@react-native-firebase/auth';
 
 export default function LoginScreen({ navigation }) {
     const [email, setEmail] = useState('');
@@ -18,15 +16,6 @@ export default function LoginScreen({ navigation }) {
     const [passwordVisibility, setPasswordVisibility] = useState(true);
     const [rightIcon, setRightIcon] = useState('eye');
     const [loginError, setLoginError] = useState('');
-    const [init, setInit] = useState(false)
-
-    useEffect(() => {
-        try {
-          setInit(route.params.init)
-        } catch (e) {
-          console.debug("No init")
-        }
-      }, [])
 
     const handlePasswordVisibility = () => {
         if (rightIcon === 'eye') {
@@ -41,8 +30,8 @@ export default function LoginScreen({ navigation }) {
     const onLogin = async () => {
         try {
             if (email !== '' && password !== '') {
-                await auth.signInWithEmailAndPassword(email, password);
-                init ? navigation.navigate("Map") : navigation.popToTop()
+                await auth().signInWithEmailAndPassword(email, password);
+                navigation.popToTop()
             }
         } catch (error) {
             setLoginError(error.message);

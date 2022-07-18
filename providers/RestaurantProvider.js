@@ -1,11 +1,10 @@
 import { createContext, useEffect, useState } from 'react';
-import Firebase from "../config/firebase";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { countBy, filter, map, startCase, uniq } from 'lodash';
 
 export const ResturantContext = createContext({});
-const db = Firebase.firestore();
+
+import firestore from '@react-native-firebase/firestore';
 
 import '@expo/browser-polyfill';
 
@@ -35,50 +34,58 @@ export const RestaurantProvider = ({ children }) => {
             console.debug(`There has been an error with AsyncStorage${error}`);
         }
         
-        // Once we have it, what can we do. 
-        const respHTTP = await fetch(`https://halal-dining-uk.web.app/createBundle/${region}`)
-        let text = await respHTTP.text()
+        // // Once we have it, what can we do. 
+        // const respHTTP = await fetch(`https://halal-dining-uk.web.app/createBundle/${region}`)
+        // let text = await respHTTP.text()
         
-        const bundlecrap = new global.TextEncoder().encode(text)
-        await db.loadBundle(bundlecrap)
-        const query = await db.namedQuery(`latest-${region}-restaurant-query`);
-        
-        var data = [];
+        // const bundlecrap = new global.TextEncoder().encode(text)
+        // await db.loadBundle(bundlecrap)
+        // const query = await db.namedQuery(`latest-${region}-restaurant-query`);
 
-        let tempCats = []
+        const restaurantQuery = await firestore().collection(`regions/${region}/restaurants`)
+
+        let snapshot = await restaurantQuery.get({ source: 'cache' })
+        if (snapshot.empty) {
+            console.debug("Nothing in the cache, lets get from server.")
+            snapshot = await restaurantQuery.get()
+        }
+        console.debug("We used the cached data!")
+
         
-        await query.get({source: "cache"})
-            .then((snap) => {
-                snap.forEach((doc) => {
-                    let d = doc.data()
-                    data.push(d)
+        const finalData = []
+        snapshot.docs.forEach((doc) => {
+            finalData.push(doc.data())
+        })
+        
+        // var data = [];
+        // let tempCats = []
+        
+        // await query.get({source: "cache"})
+        //     .then((snap) => {
+        //         snap.forEach((doc) => {
+        //             let d = doc.data()
+        //             data.push(d)
                     
-                    if ("zabData" in d) {
-                        tempCats.push(...d.zabData.categories)                        
-                    }
-                    if ("uberData" in d) {
-                        tempCats.push(...d.uberData.categories)
-                    }                
-                })
-            });    
+        //             if ("zabData" in d) {
+        //                 tempCats.push(...d.zabData.categories)                        
+        //             }
+        //             if ("uberData" in d) {
+        //                 tempCats.push(...d.uberData.categories)
+        //             }                
+        //         })
+        //     });    
             
-        let x = filter(map(countBy(tempCats), function(v, k, c){
-            if (v > 5) {
-                return startCase(k)
-            } else {
-                return false
-            }
-        }), (v, k, c) => (v != false))
+        // let x = filter(map(countBy(tempCats), function(v, k, c){
+        //     if (v > 5) {
+        //         return startCase(k)
+        //     } else {
+        //         return false
+        //     }
+        // }), (v, k, c) => (v != false))
         
-        setCategories(uniq(x));
-        setRestaurants(data);
+        setRestaurants(finalData);
         setLoading(false);
     }
-
-    const getResurantsFromFirestore = async () => {
-
-    }
-
 
     const checkLocation = async () => {
         const locationFromStorage = await AsyncStorage.getItem("Location")

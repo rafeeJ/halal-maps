@@ -7,10 +7,9 @@ import AuthButton from '../../components/AuthButton'
 import InputField from '../../components/InputField'
 import ErrorMessage from '../../components/ErrorMessage'
 
-import Firebase from '../../config/firebase';
 import { Button, Card, Text } from 'react-native-elements';
 
-const auth = Firebase.auth();
+import auth from '@react-native-firebase/auth';
 
 export default function SignupScreen({ route, navigation }, props) {
   const [email, setEmail] = useState('');
@@ -19,15 +18,6 @@ export default function SignupScreen({ route, navigation }, props) {
   const [rightIcon, setRightIcon] = useState('eye');
   const [signupError, setSignupError] = useState('');
   const [name, setName] = useState('');
-  const [init, setInit] = useState(false)
-
-  useEffect(() => {
-    try {
-      setInit(route.params.init)
-    } catch (e) {
-      console.debug("No init")
-    }
-  }, [])
 
   const handlePasswordVisibility = () => {
     if (rightIcon === 'eye') {
@@ -42,11 +32,11 @@ export default function SignupScreen({ route, navigation }, props) {
   const onHandleSignup = async () => {
     try {
       if (email !== '' && password !== '') {
-        await auth.createUserWithEmailAndPassword(email, password);
-        await auth.currentUser.updateProfile({
+        await auth().createUserWithEmailAndPassword(email, password);
+        await auth().currentUser.updateProfile({
           displayName: name
         })
-        init ? navigation.navigate("Map") : navigation.popToTop()
+        navigation.popToTop()
       }
     } catch (error) {
       setSignupError(error.message);

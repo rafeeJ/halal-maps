@@ -1,14 +1,14 @@
 import React, { useContext, useEffect } from 'react';
 import { AuthenticatedUserContext } from '../providers/AuthenticatedUserProvider';
 
-import Firebase from '../config/firebase';
 import { Card, Text, Button, ListItem } from 'react-native-elements';
 import { View } from 'react-native';
 import { ResturantContext } from '../providers/RestaurantProvider';
 
 import { startCase } from 'lodash';
 
-const auth = Firebase.auth();
+import auth from '@react-native-firebase/auth';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ProfilePage({ navigation }) {
 
@@ -17,14 +17,15 @@ export default function ProfilePage({ navigation }) {
 
   const handleSignOut = async () => {
     try {
-      await auth.signOut();
+      await auth().signOut();
     } catch (error) {
       console.log(error);
     }
+    setUser(null)
   };
 
-  useEffect(() => {
-    const unsubAuth = auth.onAuthStateChanged(async authenticatedUser => {
+  useFocusEffect(() => {
+    const unsubAuth = auth().onAuthStateChanged(async authenticatedUser => {
       try {
         await (authenticatedUser ? setUser(authenticatedUser) : setUser(null))
       } catch (error) {
@@ -32,7 +33,7 @@ export default function ProfilePage({ navigation }) {
       }
     });
     return unsubAuth
-  }, [])
+  })
 
   return (
     <>

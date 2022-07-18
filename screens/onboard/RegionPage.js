@@ -4,7 +4,6 @@ import { ActivityIndicator } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from '@react-native-picker/picker';
 
-import Firebase from '../../config/firebase';
 import { ResturantContext } from '../../providers/RestaurantProvider';
 
 import { startCase } from 'lodash'
@@ -12,8 +11,6 @@ import { Button, Card, Text } from 'react-native-elements';
 
 import * as Location from 'expo-location';
 
-const auth = Firebase.auth();
-const db = Firebase.firestore();
 
 export default function RegionPage(props) {
     const { setRegion, setLocation } = useContext(ResturantContext)
@@ -49,35 +46,12 @@ export default function RegionPage(props) {
         setLocationStatus('Permissions are allows, and we have perms')
     }
 
-    const getRegions = async () => {
-        setLoading(true)
-
-        try {
-            const respHTTP = await fetch("https://halal-dining-uk.web.app/regions")
-            let text = await respHTTP.text()
-
-            const bundlecrap = new global.TextEncoder().encode(text)
-            await db.loadBundle(bundlecrap)
-
-            var data = [];
-            const query = await db.namedQuery("latest-regions-data");
-            await query.get({ source: "cache" })
-                .then((snap) => {
-                    snap.forEach((doc) => {
-                        data.push(doc.data())
-                    })
-                });
-            setRegions(data)
-            setLoading(false)
-        } catch (error) {
-            console.debug("Failed to get regions")
-            setLoading(false)
-        }
-    }
-
     useEffect(() => {
         // Make a request to google cloud functions to get regions! 
-        getRegions()
+        setLoading(true)
+        var testRegions = ['manchester', 'birmingham'];
+        setRegions(testRegions)
+        setLoading(false)
     }, [])
 
     return (
@@ -91,7 +65,7 @@ export default function RegionPage(props) {
                     >
                         {
                             regions.map((val, idx) => {
-                                return <Picker.Item key={idx} label={startCase(val.region)} value={val.region} />
+                                return <Picker.Item key={idx} label={startCase(val)} value={val} />
                             })
                         }
                     </Picker>}
