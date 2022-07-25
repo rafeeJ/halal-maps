@@ -8,11 +8,11 @@ export default function RestaurantPage(props) {
     const [resta, setRestaurant] = useState(null)
 
     function openMap() {
-        const loc = resta.restaurantData.geometry.location
+        const loc = resta.geometry.location
 
         const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
         const latLng = `${loc.lat},${loc.lng}`;
-        const label = resta.restaurantData.name;
+        const label = resta.name;
         const url = Platform.select({
             ios: `${scheme}${label}@${latLng}`,
             android: `${scheme}${latLng}(${label})`
@@ -30,15 +30,15 @@ export default function RestaurantPage(props) {
         <View style={styles.SAView}>
             <Card>
                 <View style={{ padding: 12, alignContent: 'center' }}>
-                    <Text h2>{resta?.restaurantData?.name}</Text>
+                    <Text h2>{resta?.name}</Text>
                 </View>
             </Card>
             <Card>
                 <Text h4>Address</Text>
-                <Text>{resta?.restaurantData?.formatted_address}</Text>
+                <Text>{resta?.formatted_address}</Text>
                 <View>
                     {
-                        resta?.restaurantData?.geometry.location ?
+                        resta?.geometry?.location ?
                             <Button title="Get directions!" onPress={openMap} /> :
                             <></>
                     }
@@ -47,7 +47,7 @@ export default function RestaurantPage(props) {
             <Card>
                 <View>
                     <Text>Type:</Text>
-                    {resta?.restaurantData?.types.map((item, idx) => {
+                    {resta?.types?.map((item, idx) => {
                         return (<Text key={idx}>{"-" + " "}{item}</Text>)
 
                     })}

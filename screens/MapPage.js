@@ -42,34 +42,17 @@ export default function MapPage({ navigation }) {
     setCurrentLocation(coord)
   }
 
-  function setUpMap() {
-    console.log("Setting up the map");
-    var pointList = restaurants.map((marker, index) => {
-      var point = {}
-      point["restaurantData"] = marker.restaurantData
-      if ("restaurantData" in marker) {
-        var latlng = marker.restaurantData.geometry.location;
-        var coords = {}
-        coords["latitude"] = latlng.lat
-        coords["longitude"] = latlng.lng
-        point["coords"] = coords
-      }
-      return point
-    })
-    setPoints(pointList)
-  }
-
   useEffect(() => {
     if (points.length > 0) {
       fitAllMarkers()
     }
-  }, [points])
+  }, [restaurants])
 
-  useEffect(() => {
-    if (loading === false && restaurants.length > 0) {
-      setUpMap();
-    }
-  }, [restaurants, loading])
+  // useEffect(() => {
+  //   if (loading === false && restaurants.length > 0) {
+  //     setUpMap();
+  //   }
+  // }, [restaurants, loading])
 
 
   return (
@@ -82,13 +65,22 @@ export default function MapPage({ navigation }) {
         style={styles.map}>
         {loading ?
           <></> :
-          points.map((point, index) => {
+          restaurants.map((restaurant, index) => {
+            var lat;
+            var lng;
+            try {
+              lat = restaurant.geometry.location.lat
+              lng = restaurant.geometry.location.lng
+            } catch (error) {
+              //
+            }
+
             return (
               <Marker
                 key={index}
-                coordinate={point.coords}
-                title={point.restaurantData.name}
-                onCalloutPress={() => (navigation.navigate('Restaurant', { restaurant: point }))}
+                coordinate={{ latitude: lat, longitude: lng}}
+                title={restaurant.name}
+                onCalloutPress={() => (navigation.navigate('Restaurant', { restaurant: restaurant }))}
               >
                 <Icon type="feather" name='disc' color={'navy'} solid={true} />
               </Marker>

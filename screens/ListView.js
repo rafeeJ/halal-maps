@@ -21,19 +21,6 @@ export default function ListView() {
       let tempFilter = restaurants.filter(function (data) {
         let toFilter = false
         let curF = filters[0]
-        
-        if ("zabData" in data) {
-          if (data.zabData.categories.includes(curF)) {
-            toFilter = true
-          }
-        }
-
-        if ("uberData" in data) {
-          if (data.uberData.categories.includes(curF)) {
-            toFilter = true
-          }
-        }
-
         return toFilter
       })
 

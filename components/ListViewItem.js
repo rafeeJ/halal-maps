@@ -10,13 +10,13 @@ export default function ListViewItem(props) {
   const [categories, setCategories] = useState([])
   const [color, setColor] = useState('blue')
 
-  useEffect(() => {
-    const x = ['Halal', '$', '$$', '$$$', 'Vegan', 'Vegetarian']
-    var cats = 'uberData' in props.item ? props.item.uberData.categories : props.item.zabData.categories
-    var cats = cats.filter(el => !x.includes(el))
-    setCategories(cats.slice(0, 2))
-    setColor(seedColor(cats[0]).toHex())
-  }, [])
+  // useEffect(() => {
+  //   const x = ['Halal', '$', '$$', '$$$', 'Vegan', 'Vegetarian']
+  //   var cats = 'uberData' in props.item ? props.item.uberData.categories : props.item.zabData.categories
+  //   var cats = cats.filter(el => !x.includes(el))
+  //   setCategories(cats.slice(0, 2))
+  //   setColor(seedColor(cats[0]).toHex())
+  // }, [])
 
   return (
     <TouchableOpacity
@@ -25,7 +25,7 @@ export default function ListViewItem(props) {
     >
       <View style={{ backgroundColor: color, borderRadius: 7}} width={50} height={'100%'}></View>
       <View style={{flexGrow: 5, padding: 10 }}>
-        <Text style={{ color: 'black', marginVertical: 10 }}>{props.item.restaurantData.name}</Text>
+        <Text style={{ color: 'black', marginVertical: 10 }}>{props.item.name}</Text>
         <View style={{ flexDirection: 'row' }}>
           {
             categories.map((el, i) => (
