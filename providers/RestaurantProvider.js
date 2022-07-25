@@ -12,47 +12,26 @@ export const RestaurantProvider = ({ children }) => {
     
     const [restaurants, setRestaurants] = useState([]);
     const [categories, setCategories] = useState([])
-    const [loading, setLoading] = useState(false);
-    const [region, setRegion] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [region, setRegion] = useState(null);
     const [location, setLocation] = useState(null)
 
     const getRestaurants = async () => {
         setLoading(true);
         console.log(`Getting restaurants from database for region ${region}`)
-        
-        // We need to get the region.
-        try {
-            const r = await AsyncStorage.getItem("Region")
-            if (r === null) {
-                conesole.debug(`There is no region set in AsyncStorage`);
-                return;
-            } else {
-                setRegion(r)
-                console.debug(`Region has been set to ${r}`)
-            }
-        } catch (error) {
-            console.debug(`There has been an error with AsyncStorage${error}`);
-        }
-        
-        // // Once we have it, what can we do. 
-        // const respHTTP = await fetch(`https://halal-dining-uk.web.app/createBundle/${region}`)
-        // let text = await respHTTP.text()
-        
-        // const bundlecrap = new global.TextEncoder().encode(text)
-        // await db.loadBundle(bundlecrap)
-        // const query = await db.namedQuery(`latest-${region}-restaurant-query`);
-
+            
         const restaurantQuery = await firestore().collection(`regions/${region}/restaurants`)
 
         let snapshot = await restaurantQuery.get({ source: 'cache' })
         if (snapshot.empty) {
             console.debug("Nothing in the cache, lets get from server.")
             snapshot = await restaurantQuery.get()
+        } else {
+            console.debug("We used the cached data!")
         }
-        console.debug("We used the cached data!")
-
         
         const finalData = []
+        
         snapshot.docs.forEach((doc) => {
             finalData.push(doc.data())
         })
@@ -87,24 +66,21 @@ export const RestaurantProvider = ({ children }) => {
         setLoading(false);
     }
 
-    const checkLocation = async () => {
-        const locationFromStorage = await AsyncStorage.getItem("Location")
-        if (locationFromStorage === null) {
-            console.debug("Location has not been set.")
+    const checkRegion = async () => {
+        const regionFromStorage = await AsyncStorage.getItem("Region")
+        if (regionFromStorage === null) {
+            console.debug("Region has not been set.")
         } else {
-            setLocation(locationFromStorage)
-            console.debug(`Location has been set to ${ locationFromStorage }`)
+            setRegion(regionFromStorage)
+            console.debug(`Location has been set to ${ regionFromStorage }`)
             await getRestaurants()
         }
+        setLoading(false)
     }
 
-    // useEffect(() => {
-    //     checkLocation()
-    // }, []);
-
     useEffect(() => {
-        checkLocation();
-    }, [location])
+        checkRegion();
+    }, [region])
 
     return (
         <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion, region, location, setLocation }}>

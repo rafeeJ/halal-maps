@@ -12,13 +12,12 @@ export default function MapPage({ navigation }) {
   const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
   const CURRENT_LOCATION_PADDING = { top: 1000, right: 1000, bottom: 1000, left: 1000 };
 
-  const { loading, restaurants, location } = useContext(ResturantContext)
+  const { loading, restaurants, region } = useContext(ResturantContext)
 
   const mapR = useRef(null)
 
   const [points, setPoints] = useState([])
   const [currentLocation, setCurrentLocation] = useState(null)
-  const [open, setOpen] = useState(false)
 
   function fitAllMarkers() {
     var latLngs = points.map((val, idx) => {
@@ -67,7 +66,7 @@ export default function MapPage({ navigation }) {
   }, [points])
 
   useEffect(() => {
-    if (loading == false) {
+    if (loading === false && restaurants.length > 0) {
       setUpMap();
     }
   }, [restaurants, loading])
@@ -75,7 +74,7 @@ export default function MapPage({ navigation }) {
 
   return (
     <SafeAreaView style={styles.SAView}>
-      { location ? 
+      { region ? 
       <>
       <MapView
         maxZoomLevel={15}
