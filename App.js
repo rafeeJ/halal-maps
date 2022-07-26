@@ -19,6 +19,7 @@ export default function App() {
   
   useEffect(() => {
     AsyncStorage.clear()
+    console.log(process.env.MAPS_API)
     check()
   }, []);
 
