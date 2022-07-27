@@ -26,9 +26,7 @@ export default function RegionPage(props) {
 
     async function handleSubmit() {
         await AsyncStorage.setItem("Region", selectedRegion)
-        await AsyncStorage.setItem("Location", selectedRegion)
         setRegion(selectedRegion)
-        setLocation(selectedRegion)
         props.navigation.goBack()
     }
 
@@ -58,25 +56,27 @@ export default function RegionPage(props) {
         <>
             <Card>
                 <Card.Title>Available Regions</Card.Title>
-                {loading ? <ActivityIndicator /> :
-                    <Picker
-                        selectedValue={selectedRegion}
-                        onValueChange={(val, idx) => setSelectedRegion(val)}
-                    >
-                        {
-                            regions.map((val, idx) => {
-                                return <Picker.Item key={idx} label={startCase(val)} value={val} />
-                            })
-                        }
-                    </Picker>}
+                {
+                    loading ?
+                        <ActivityIndicator /> :
+                        <Picker
+                            selectedValue={selectedRegion}
+                            onValueChange={(val, idx) => setSelectedRegion(val)}
+                        >
+                            {
+                                regions.map((val, idx) => {
+                                    return <Picker.Item key={idx} label={startCase(val)} value={val} />
+                                })
+                            }
+                        </Picker>}
             </Card>
             <Card>
                 <Button title='Save Region' disabled={loading} onPress={() => handleSubmit()} />
             </Card>
             <Card>
                 <Button title='Use current location' disabled={!useLocation} onPress={() => handleCurrentLocation()} />
-                { locationStatus ? <Text> {locationStatus} </Text> : <Text>Use the button above to use your current location</Text>}
-                
+                {locationStatus ? <Text> {locationStatus} </Text> : <Text>Use the button above to use your current location</Text>}
+
             </Card>
         </>
     );

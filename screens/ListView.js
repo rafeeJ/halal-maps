@@ -9,7 +9,7 @@ import { ResturantContext } from '../providers/RestaurantProvider';
 
 export default function ListView() {
 
-  const { restaurants, categories, location } = useContext(ResturantContext)
+  const { restaurants, categories, region } = useContext(ResturantContext)
 
   const [filters, setFilters] = useState([])
   const [filteredData, setFilteredData] = useState([])
@@ -32,7 +32,7 @@ export default function ListView() {
 
   const renderItem = ({ item }) => <ListViewItem key={item.id} item={item} />
 
-  if (location === null) {
+  if (region === null) {
     return(<NoLocationScreen />)
   }
 

@@ -1,14 +1,15 @@
 import * as Location from 'expo-location';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { FAB, Icon } from 'react-native-elements';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import NoLocationScreen from '../components/NoLocationScreen';
+import checkIfFirstLaunch from '../config/CheckIfFirstLaunched';
 import { ResturantContext } from '../providers/RestaurantProvider';
 
-export default function MapPage({ navigation }) {  
+export default function MapPage({ navigation }) {
   const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
   const CURRENT_LOCATION_PADDING = { top: 1000, right: 1000, bottom: 1000, left: 1000 };
 
@@ -19,13 +20,22 @@ export default function MapPage({ navigation }) {
   const [mapsKey, setMapsKey] = useState(null)
   const [points, setPoints] = useState([])
   const [currentLocation, setCurrentLocation] = useState(null)
+  const [isFirstLaunch, setIsFirstLaunch] = useState(null)
 
   function fitAllMarkers() {
-    var latLngs = points.map((val, idx) => {
-      if (val.coords) {
-        return val.coords
+    var latLngs = restaurants.map((restaurant, idx) => {
+
+      var lat;
+      var lng;
+      try {
+        lat = restaurant.geometry.location.lat
+        lng = restaurant.geometry.location.lng
+        return ({ latitude: lat, longitude: lng })
+      } catch (error) {
+        //
       }
     }).filter(p => p)
+
     mapR.current.fitToCoordinates(latLngs, { edgePadding: DEFAULT_PADDING, animated: true })
   }
 
@@ -44,7 +54,7 @@ export default function MapPage({ navigation }) {
   }
 
   useEffect(() => {
-    if (points.length > 0) {
+    if (restaurants) {
       fitAllMarkers()
     }
   }, [restaurants])
@@ -53,53 +63,62 @@ export default function MapPage({ navigation }) {
     setMapsKey(process.env.MAPS_API)
   }, [])
 
-  // useEffect(() => {
-  //   if (loading === false && restaurants.length > 0) {
-  //     setUpMap();
-  //   }
-  // }, [restaurants, loading])
-
+  const checkFirstLaunch = async () => {
+    var fl = await checkIfFirstLaunch()
+    if (fl) {
+      navigation.navigate("ProfileStack", { screen: "Region" })
+    }
+  }
+  useEffect(() => {
+    checkFirstLaunch()
+    console.log(region);
+  }, [])
 
   return (
     <SafeAreaView style={styles.SAView}>
-      {region ?
-        <>
-          <MapView
-            maxZoomLevel={15}
-            ref={mapR}
-            style={styles.map}>
-            {loading ?
-              <></> :
-              restaurants.map((restaurant, index) => {
-                var lat;
-                var lng;
-                try {
-                  lat = restaurant.geometry.location.lat
-                  lng = restaurant.geometry.location.lng
-                } catch (error) {
-                  //
-                }
+      {
+        region ?
+          <>
+            <MapView
+              maxZoomLevel={15}
+              ref={mapR}
+              style={styles.map}>
+              {
+                restaurants ?
+                  restaurants.map((restaurant, index) => {
 
-                return (
-                  <Marker
-                    key={index}
-                    coordinate={{ latitude: lat, longitude: lng }}
-                    title={restaurant.name}
-                    onCalloutPress={() => (navigation.navigate('Restaurant', { restaurant: restaurant }))}
-                  >
-                    <Icon type="feather" name='disc' color={'navy'} solid={true} />
-                  </Marker>
-                )
-              })
-            }
-            {currentLocation ?
-              <Marker coordinate={currentLocation} style={{ zIndex: 1000 }}>
-                <Icon type="feather" name='user' color={'white'} solid={true} size={30} backgroundColor={'salmon'} borderRadius={100} />
-              </Marker> : <></>
-            }
-          </MapView>
-          <View pointerEvents='box-none' style={styles.innerView}>
-            <View pointerEvents='box-none' style={styles.topBar}>
+                    var lat;
+                    var lng;
+                    try {
+                      lat = restaurant.geometry.location.lat
+                      lng = restaurant.geometry.location.lng
+
+                      return (
+                        <Marker
+                          key={index}
+                          coordinate={{ latitude: lat, longitude: lng }}
+                          title={restaurant.name}
+                          onCalloutPress={() => (navigation.navigate('Restaurant', { restaurant: restaurant }))}
+                        >
+                          <Icon type="feather" name='disc' color={'navy'} solid={true} />
+                        </Marker>
+                      )
+                    } catch (error) {
+                      //console.log(`${restaurant.name} doesnt have valid coords`)
+                    }
+
+
+                  }) : <ActivityIndicator />
+              }
+              {
+                currentLocation ?
+                  <Marker coordinate={currentLocation} style={{ zIndex: 1000 }}>
+                    <Icon type="feather" name='user' color={'white'} solid={true} size={30} backgroundColor={'salmon'} borderRadius={100} />
+                  </Marker> : <></>
+              }
+            </MapView>
+            <View pointerEvents='box-none' style={styles.innerView}>
+              <View pointerEvents='box-none' style={styles.topBar}>
 
                 <GooglePlacesAutocomplete
                   placeholder='Search'
@@ -120,11 +139,11 @@ export default function MapPage({ navigation }) {
                   }}
                 />
 
-              <FAB color={'salmon'} onPress={() => getCurrentLocation()} icon={<Icon type='feather' name='navigation' color={'white'} />} />
+                <FAB color={'salmon'} onPress={() => getCurrentLocation()} icon={<Icon type='feather' name='navigation' color={'white'} />} />
+              </View>
             </View>
-          </View>
-        </> :
-        <NoLocationScreen />}
+          </> :
+          <NoLocationScreen />}
     </SafeAreaView>
   );
 }

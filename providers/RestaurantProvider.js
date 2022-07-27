@@ -9,15 +9,15 @@ import firestore from '@react-native-firebase/firestore';
 import '@expo/browser-polyfill';
 
 export const RestaurantProvider = ({ children }) => {
+    const [categories, setCategories] = useState(null)
     
-    const [restaurants, setRestaurants] = useState([]);
-    const [categories, setCategories] = useState([])
+    const [restaurants, setRestaurants] = useState(null);
     const [loading, setLoading] = useState(true);
     const [region, setRegion] = useState(null);
-    const [location, setLocation] = useState(null)
 
     const getRestaurants = async () => {
         setLoading(true);
+        
         console.log(`Getting restaurants from database for region ${region}`)
             
         const restaurantQuery = await firestore().collection(`regions/${region}/restaurants`)
@@ -36,37 +36,12 @@ export const RestaurantProvider = ({ children }) => {
             finalData.push(doc.data())
         })
         
-        // var data = [];
-        // let tempCats = []
-        
-        // await query.get({source: "cache"})
-        //     .then((snap) => {
-        //         snap.forEach((doc) => {
-        //             let d = doc.data()
-        //             data.push(d)
-                    
-        //             if ("zabData" in d) {
-        //                 tempCats.push(...d.zabData.categories)                        
-        //             }
-        //             if ("uberData" in d) {
-        //                 tempCats.push(...d.uberData.categories)
-        //             }                
-        //         })
-        //     });    
-            
-        // let x = filter(map(countBy(tempCats), function(v, k, c){
-        //     if (v > 5) {
-        //         return startCase(k)
-        //     } else {
-        //         return false
-        //     }
-        // }), (v, k, c) => (v != false))
-        
         setRestaurants(finalData);
         setLoading(false);
     }
 
     const checkRegion = async () => {
+        console.log("checking storage")
         const regionFromStorage = await AsyncStorage.getItem("Region")
         if (regionFromStorage === null) {
             console.debug("Region has not been set.")
@@ -83,7 +58,7 @@ export const RestaurantProvider = ({ children }) => {
     }, [region])
 
     return (
-        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion, region, location, setLocation }}>
+        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion, region }}>
             {children}
         </ResturantContext.Provider>
     );
