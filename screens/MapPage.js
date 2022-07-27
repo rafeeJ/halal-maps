@@ -13,14 +13,12 @@ export default function MapPage({ navigation }) {
   const DEFAULT_PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
   const CURRENT_LOCATION_PADDING = { top: 1000, right: 1000, bottom: 1000, left: 1000 };
 
-  const { loading, restaurants, region } = useContext(ResturantContext)
+  const { restaurants, region } = useContext(ResturantContext)
 
   const mapR = useRef(null)
 
   const [mapsKey, setMapsKey] = useState(null)
-  const [points, setPoints] = useState([])
   const [currentLocation, setCurrentLocation] = useState(null)
-  const [isFirstLaunch, setIsFirstLaunch] = useState(null)
 
   function fitAllMarkers() {
     var latLngs = restaurants.map((restaurant, idx) => {

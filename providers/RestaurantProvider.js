@@ -12,12 +12,9 @@ export const RestaurantProvider = ({ children }) => {
     const [categories, setCategories] = useState(null)
     
     const [restaurants, setRestaurants] = useState(null);
-    const [loading, setLoading] = useState(true);
     const [region, setRegion] = useState(null);
 
-    const getRestaurants = async () => {
-        setLoading(true);
-        
+    const getRestaurants = async () => {        
         console.log(`Getting restaurants from database for region ${region}`)
             
         const restaurantQuery = await firestore().collection(`regions/${region}/restaurants`)
@@ -37,7 +34,6 @@ export const RestaurantProvider = ({ children }) => {
         })
         
         setRestaurants(finalData);
-        setLoading(false);
     }
 
     const checkRegion = async () => {
@@ -47,18 +43,20 @@ export const RestaurantProvider = ({ children }) => {
             console.debug("Region has not been set.")
         } else {
             setRegion(regionFromStorage)
-            console.debug(`Location has been set to ${ regionFromStorage }`)
-            await getRestaurants()
+            console.debug(`Region has been set to ${ regionFromStorage }`)
         }
-        setLoading(false)
     }
 
     useEffect(() => {
-        checkRegion();
+        if (region) {
+            getRestaurants()
+        }
     }, [region])
 
+    useEffect(() => {checkRegion()}, [])
+
     return (
-        <ResturantContext.Provider value={{ loading, restaurants, categories, setRegion, region }}>
+        <ResturantContext.Provider value={{ restaurants, categories, setRegion, region }}>
             {children}
         </ResturantContext.Provider>
     );
