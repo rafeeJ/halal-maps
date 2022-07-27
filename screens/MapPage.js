@@ -16,6 +16,7 @@ export default function MapPage({ navigation }) {
   const { restaurants, region } = useContext(ResturantContext)
 
   const mapR = useRef(null)
+  const textRef = useRef(null)
 
   const [mapsKey, setMapsKey] = useState(null)
   const [currentLocation, setCurrentLocation] = useState(null)
@@ -51,6 +52,16 @@ export default function MapPage({ navigation }) {
     setCurrentLocation(coord)
   }
 
+  const zoomToLocation = async (data) => {
+    let coord = { latitude: data.geometry.location.lat, longitude: data.geometry.location.lng}
+    try {
+      mapR.current.fitToCoordinates([coord], {edgePadding: CURRENT_LOCATION_PADDING, animated: false})
+      textRef.current?.clear()
+    } catch (error) {
+      console.log(erro)
+    }
+  }
+
   useEffect(() => {
     if (restaurants) {
       fitAllMarkers()
@@ -69,7 +80,6 @@ export default function MapPage({ navigation }) {
   }
   useEffect(() => {
     checkFirstLaunch()
-    console.log(region);
   }, [])
 
   return (
@@ -119,16 +129,17 @@ export default function MapPage({ navigation }) {
               <View pointerEvents='box-none' style={styles.topBar}>
 
                 <GooglePlacesAutocomplete
-                  placeholder='Search'
-                  fetchDetails={false}
+                ref={textRef}
+                  placeholder='Search for restaurants in a given area:'
+                  fetchDetails={true}
+                  GooglePlacesDetailsQuery={{fields: 'geometry'}}
                   styles={{
                     container: {
                       width: '100%'
                     }
                   }}
-                  onPress={(data, details = null) => {
-                    // 'details' is provided when fetchDetails = true
-                    console.log(data, details);
+                  onPress={(data, details) => {
+                    zoomToLocation(details)
                   }}
                   query={{
                     key: mapsKey,
