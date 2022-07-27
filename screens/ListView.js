@@ -11,18 +11,14 @@ export default function ListView() {
 
   const { restaurants, categories, region } = useContext(ResturantContext)
 
-  const [filters, setFilters] = useState([])
+  const [filters, setFilters] = useState(null)
   const [filteredData, setFilteredData] = useState([])
 
   useEffect(() => {
-    if (filters.length > 0) {
+    if (filters) {
       console.log(`updating filter with: ${filters}`);
 
-      let tempFilter = restaurants.filter(function (data) {
-        let toFilter = false
-        let curF = filters[0]
-        return toFilter
-      })
+      let tempFilter = restaurants.filter(restaurant => restaurant.categories.includes(filters))
 
       setFilteredData(tempFilter)
     } else {

@@ -28,11 +28,34 @@ export const RestaurantProvider = ({ children }) => {
         }
         
         const finalData = []
-        
+        const categories = []
+
         snapshot.docs.forEach((doc) => {
-            finalData.push(doc.data())
+            let data = doc.data()
+            
+            finalData.push(data)
+
+            var restaurantCategories;
+            try {
+                restaurantCategories = data.categories
+                categories.push(...restaurantCategories)
+            } catch (error) {
+                //
+            }
         })
         
+        let categoryOccurences = countBy(categories);
+
+        let sortedArray = [];
+        for (var category in categoryOccurences) {
+            sortedArray.push([category, categoryOccurences[category]])
+        }
+
+        sortedArray.sort((a,b) => {
+            return b[1] - a[1]
+        })
+        
+        setCategories(sortedArray);
         setRestaurants(finalData);
     }
 

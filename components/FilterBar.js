@@ -16,19 +16,19 @@ export default function FilterBar({ setState, cats }) {
     if (id === clickedID) {
       handleClear()
     } else {
-      setState([title])
+      setState(title)
       setClickedID(id)
     }
   }
   
   const handleClear = () => {
     console.log(`Clearing filters`);
-    setState([])
+    setState(null)
     setClickedID(-1)
   }
 
   const renderPill = ({ item, index }) => 
-  <TogglePill id={index} toggled={ clickedID === index ? true : false} title={item} callback={handleClick}/>
+  <TogglePill id={index} toggled={ clickedID === index ? true : false} title={`${item[0]}`} callback={handleClick}/>
 
   return (
     <View
