@@ -9,20 +9,13 @@ import { ResturantContext } from '../../providers/RestaurantProvider';
 import { startCase } from 'lodash'
 import { Button, Card, Text } from 'react-native-elements';
 
-import * as Location from 'expo-location';
-
+import firestore from '@react-native-firebase/firestore';
 
 export default function RegionPage(props) {
-    const { setRegion, setLocation } = useContext(ResturantContext)
+    const { setRegion } = useContext(ResturantContext)
 
     const [selectedRegion, setSelectedRegion] = useState("manchester")
-    const [regions, setRegions] = useState([])
-    const [loading, setLoading] = useState(false)
-
-    const [locationStatus, setLocationStatus] = useState(null)
-    const [geoLocation, setGeoLocation] = useState(null)
-    const [useLocation, setUseLocation] = useState(true)
-
+    const [availableRegions, setAvailableRegions] = useState(null)
 
     async function handleSubmit() {
         await AsyncStorage.setItem("Region", selectedRegion)
@@ -30,26 +23,25 @@ export default function RegionPage(props) {
         props.navigation.goBack()
     }
 
-    var handleCurrentLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-            setLocationStatus('Please enable location in iOS settings')
-            setUseLocation(false)
-            return
+    const getRegionsFromFirestore = async () => {
+        const regionQuery = await firestore().collection('regions')
+
+        let snapshot = await regionQuery.get({ source: 'cache'})
+        if (snapshot.empty) {
+            snapshot = await regionQuery.get()
         }
 
-        let location = await Location.getCurrentPositionAsync({})
-        setGeoLocation(location)
-        console.log(location)
-        setLocationStatus('Permissions are allows, and we have perms')
+        const regionFromFirestore = []
+
+        snapshot.docs.forEach((doc) => {
+            regionFromFirestore.push(doc.id)
+        })
+
+        setAvailableRegions(regionFromFirestore)
     }
 
     useEffect(() => {
-        // Make a request to google cloud functions to get regions! 
-        setLoading(true)
-        var testRegions = ['manchester', 'birmingham'];
-        setRegions(testRegions)
-        setLoading(false)
+        getRegionsFromFirestore()
     }, [])
 
     return (
@@ -57,26 +49,22 @@ export default function RegionPage(props) {
             <Card>
                 <Card.Title>Available Regions</Card.Title>
                 {
-                    loading ?
-                        <ActivityIndicator /> :
+                    availableRegions ?
                         <Picker
                             selectedValue={selectedRegion}
                             onValueChange={(val, idx) => setSelectedRegion(val)}
                         >
                             {
-                                regions.map((val, idx) => {
+                                availableRegions.map((val, idx) => {
                                     return <Picker.Item key={idx} label={startCase(val)} value={val} />
                                 })
                             }
-                        </Picker>}
+                        </Picker> :
+                        <ActivityIndicator />
+                        }
             </Card>
             <Card>
-                <Button title='Save Region' disabled={loading} onPress={() => handleSubmit()} />
-            </Card>
-            <Card>
-                <Button title='Use current location' disabled={!useLocation} onPress={() => handleCurrentLocation()} />
-                {locationStatus ? <Text> {locationStatus} </Text> : <Text>Use the button above to use your current location</Text>}
-
+                <Button title='Save Region' disabled={!availableRegions} onPress={() => handleSubmit()} />
             </Card>
         </>
     );
