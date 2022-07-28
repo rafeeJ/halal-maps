@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
 
-    paddingHorizontal: 5
+    paddingHorizontal: 5,
+
   },
   initials: {
     color: 'white'
