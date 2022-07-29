@@ -1,20 +1,34 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, StyleSheet, View } from 'react-native';
 
-import { Button, Chip, Icon, Input, ListItem, Rating, Switch, Text } from 'react-native-elements';
+import { Button, ButtonGroup, Chip, Icon, Input, ListItem, Rating, Switch, Text } from 'react-native-elements';
 import ListViewItem from '../components/ListViewItem';
 import NoLocationScreen from '../components/NoLocationScreen';
 import { ResturantContext } from '../providers/RestaurantProvider';
 import FilterBar from '../components/FilterBar';
 
 import Modal from 'react-native-modal'
+import TogglePill from '../components/TogglePill';
 
 export default function ListView() {
 
   const { restaurants, categories, region } = useContext(ResturantContext)
 
   const [filters, setFilters] = useState(null)
+
+  // This
+  // var complexFiltersEG = 
+  // {
+  //   fullyHalal: true,
+  //   servesAlcohol: false,
+  //   priceLevel: 0,
+  //   minRating: 0
+  // }
+
+  const [complexFilters, setComplexFilters] = useState({})
+
   const [filteredData, setFilteredData] = useState([])
+
   const [modalVisible, setModalVisible] = useState(false)
 
   const toggleModal = () => {
@@ -32,6 +46,18 @@ export default function ListView() {
       setFilteredData([])
     }
   }, [filters])
+
+  useEffect(() => {
+    console.log(complexFilters)
+  }, [complexFilters])
+
+  var complexFiltersEG =
+  {
+    fullyHalal: true,
+    servesAlcohol: false,
+    priceLevel: 0,
+    minRating: 0
+  }
 
   const renderItem = ({ item }) => <ListViewItem key={item.id} item={item} />
 
@@ -63,6 +89,7 @@ export default function ListView() {
           keyExtractor={(item, index) => index} />
 
       </View>
+
       <Modal isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}
         swipeDirection='down'
@@ -75,8 +102,8 @@ export default function ListView() {
           </View>
 
           <View style={{ paddingHorizontal: 25 }}>
-            <FilterView />
-            <Button title={'Apply Filters'}/>
+            <FilterView setFilters={setComplexFilters} />
+            <Button title={'Apply Filters'} />
           </View>
 
         </View>
@@ -95,7 +122,31 @@ const styles = StyleSheet.create({
   }
 })
 
-const FilterView = () => {
+const FilterView = ({ setFilters }) => {
+
+  const handleRating = (r) => {
+    console.log('what the fuck');
+    setRating(r)
+  }
+
+  const [halal, setHalal] = useState(null)
+  const [alcohol, setAlcohol] = useState(null)
+  const [rating, setRating] = useState(null)
+  const [price, setPrice] = useState(null)
+
+  const [clickedID, setClickedID] = useState(-1)
+
+
+  useEffect(() => {
+    setFilters({
+      halal: halal,
+      alcohol: alcohol,
+      rating: rating,
+      price: price
+    })
+  },
+    [halal, alcohol, rating, price])
+
   return (
     <>
       <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -106,37 +157,73 @@ const FilterView = () => {
       <ListItem topDivider bottomDivider>
         <ListItem.Content style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Fully Halal</Text>
-          <Switch />
+          <Switch value={halal} onValueChange={setHalal} />
         </ListItem.Content>
       </ListItem>
 
       <ListItem bottomDivider >
         <ListItem.Content style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text>Serves Alcohol</Text>
-          <Switch />
+          <Switch value={alcohol} onValueChange={setAlcohol} />
         </ListItem.Content>
       </ListItem>
 
       <ListItem bottomDivider>
-        <ListItem.Content style={{ display: 'flex', flexDirection: 'column'}}>
+        <ListItem.Content style={{ display: 'flex', flexDirection: 'column' }}>
           <Text style={{ textAlign: 'left', marginBottom: 5 }}>Price Level:</Text>
-          <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
-            <Chip title={'£'} titleStyle={{color: 'black'}} type={'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }}/>
-            <Chip title={'££'} type={'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }}/>
-            <Chip title={'£££'} type={'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }}/>
-          </View>
+          <ButtonGroup
+            onPress={(idx) => (setPrice(idx + 1))}
+            selectedIndex={clickedID}
+            buttons={['£', '££', '£££']}
+            selectedButtonStyle={{ backgroundColor: 'blue' }}
+          />
         </ListItem.Content>
       </ListItem>
 
       <ListItem bottomDivider>
-        <ListItem.Content style={{ display: 'flex', flexDirection: 'column'}}>
+        <ListItem.Content style={{ display: 'flex', flexDirection: 'column' }}>
           <Text style={{ textAlign: 'left', marginBottom: 5 }}>Minimum Rating:</Text>
           <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', width: '100%', flexWrap: 'wrap', alignContent: 'space-between' }}>
-            <Rating fractions={0} startingValue={5}/>
+            <Rating fractions={0} startingValue={5} onFinishRating={handleRating} />
           </View>
         </ListItem.Content>
       </ListItem>
 
     </>
+  )
+}
+
+const PriceLevel = ({ priceCB }) => {
+  const [price, setPrice] = useState(null)
+  const [clickedID, setClickedID] = useState(-1)
+
+  const handleClick = (idx) => {
+    console.log(idx)
+    // if (id === clickedID) {
+    //   setClickedID(null)
+    // } else{
+    //   setClickedID(id)
+    //   priceCB(id)
+    // }
+  }
+
+
+  useEffect(() => { console.log(clickedID) }, [clickedID])
+
+  return (
+    <ButtonGroup
+      onPress={handleClick}
+      selectedIndex={clickedID}
+      buttons={['£', '££', '£££']}
+      selectedButtonStyle={{ backgroundColor: 'blue' }}
+      underlayColor={'red'}
+    />
+
+    // <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
+
+    //   {/* <Chip onPress={handleClick} id={1} title={'£'} titleStyle={{ color: 'black' }} type={ clickedID === 1 ? 'solid' : 'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }} />
+    //   <Chip onPress={handleClick} id={2} title={'££'} titleStyle={{ color: 'black' }} type={'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }} />
+    //   <Chip onPress={handleClick} id={3} title={'£££'} titleStyle={{ color: 'black' }} type={'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }} /> */}
+    // </View>
   )
 }

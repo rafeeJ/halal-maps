@@ -1,9 +1,7 @@
-import React, { useContext, useState } from 'react';
-import { Text, StyleSheet, StatusBar, FlatList, View, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import { Chip } from 'react-native-elements/dist/buttons/Chip';
 
-import ListViewItem from '../components/ListViewItem'
-import { ResturantContext } from '../providers/RestaurantProvider';
 
 export default function TogglePill({ title, id, callback, toggled}) {
     const [toggle, setToggle] = useState(false)
