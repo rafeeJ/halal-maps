@@ -10,7 +10,6 @@ import { ResturantContext } from '../providers/RestaurantProvider';
 import { ButtonGroup } from "@rneui/themed";
 
 import Modal from 'react-native-modal';
-import { filter } from 'lodash';
 
 export default function ListView() {
 
@@ -22,11 +21,33 @@ export default function ListView() {
 
   const [filteredData, setFilteredData] = useState([])
 
+  const [searchedArray, setSearchedArray] = useState([])
+
   const [modalVisible, setModalVisible] = useState(false)
+
+  const [searchString, setSearchString] = useState('')
 
   const toggleModal = () => {
     setModalVisible(!modalVisible)
   }
+
+  const handleTextInput = (value) => {
+    setSearchString(value)
+  }
+
+  useEffect(() => {
+    if (searchString !== '') {
+      if (filteredData.length > 0) {
+        let t = filteredData.filter(r => r.name.toLowerCase().includes(searchString.toLowerCase()))
+        setSearchedArray(t)
+      } else {
+        let t = restaurants.filter(r => r.name.toLowerCase().includes(searchString.toLowerCase()))
+        setSearchedArray(t)
+      }
+    } else {
+      setSearchedArray([])
+    }
+  }, [searchString])
 
   useEffect(() => {
     if (filters) {
@@ -42,7 +63,6 @@ export default function ListView() {
 
   useEffect(() => {
     if (complexFilters) {
-      console.log(complexFilters)
       
       var tempArray = restaurants.filter( r => {
         return (complexFilters.halal ? r.fullHalal === complexFilters.halal : 1) && 
@@ -50,13 +70,11 @@ export default function ListView() {
                (complexFilters.rating ? r.rating >= complexFilters.rating : 1) && 
                (complexFilters.price ? r.price_level === complexFilters.price: 1)
       })
-      console.debug(tempArray.length)
-
+      // Set available categories to filter here!
       setFilteredData(tempArray)
-        // servesAlcohol: bool
-        // fullHalal: bool
-        // rating: number
-        // price_level: number
+      
+    } else {
+      setFilteredData([])
     }
   }, [complexFilters])
 
@@ -76,10 +94,10 @@ export default function ListView() {
       <View style={styles.SAView}>
         <View style={{ display: 'flex', flexDirection: 'row', paddingHorizontal: 5, marginTop: 5 }}>
           <View style={{ flex: 1 }}>
-            <Input placeholder='Search by Name' />
+            <Input value={searchString} placeholder='Search by Name' onChangeText={handleTextInput}/>
           </View>
           <Button icon={<Icon type="feather" name='filter' color={'black'} solid={true} />}
-            buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }}
+            buttonStyle={{ marginHorizontal: 10, borderColor: 'black', backgroundColor: complexFilters ? 'red' : 'white'}}
             onPress={toggleModal}
             type={'outline'}
           />
@@ -90,7 +108,7 @@ export default function ListView() {
           maxToRenderPerBatch={6}
           removeClippedSubviews={true}
           style={styles.list}
-          data={filteredData && filteredData.length > 0 ? filteredData : restaurants}
+          data={searchString ? searchedArray : filteredData && filteredData.length > 0 ? filteredData : restaurants}
           renderItem={renderItem}
           keyExtractor={(item, index) => index} />
 
