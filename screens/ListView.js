@@ -1,14 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, StyleSheet, View } from 'react-native';
 
-import { Button, ButtonGroup, Chip, Icon, Input, ListItem, Rating, Switch, Text } from 'react-native-elements';
+import { Button, Icon, Input, ListItem, Rating, Switch, Text } from 'react-native-elements';
+import FilterBar from '../components/FilterBar';
 import ListViewItem from '../components/ListViewItem';
 import NoLocationScreen from '../components/NoLocationScreen';
 import { ResturantContext } from '../providers/RestaurantProvider';
-import FilterBar from '../components/FilterBar';
 
-import Modal from 'react-native-modal'
-import TogglePill from '../components/TogglePill';
+import { ButtonGroup } from "@rneui/themed";
+
+import Modal from 'react-native-modal';
+import { filter } from 'lodash';
 
 export default function ListView() {
 
@@ -16,16 +18,7 @@ export default function ListView() {
 
   const [filters, setFilters] = useState(null)
 
-  // This
-  // var complexFiltersEG = 
-  // {
-  //   fullyHalal: true,
-  //   servesAlcohol: false,
-  //   priceLevel: 0,
-  //   minRating: 0
-  // }
-
-  const [complexFilters, setComplexFilters] = useState({})
+  const [complexFilters, setComplexFilters] = useState(null)
 
   const [filteredData, setFilteredData] = useState([])
 
@@ -48,15 +41,28 @@ export default function ListView() {
   }, [filters])
 
   useEffect(() => {
-    console.log(complexFilters)
+    if (complexFilters) {
+      console.log(complexFilters)
+      
+      var tempArray = restaurants.filter( r => {
+        return (complexFilters.halal ? r.fullHalal === complexFilters.halal : 1) && 
+               (complexFilters.alcohol ? r.servesAlcohol === complexFilters.alcohol : 1) &&
+               (complexFilters.rating ? r.rating >= complexFilters.rating : 1) && 
+               (complexFilters.price ? r.price_level === complexFilters.price: 1)
+      })
+      console.debug(tempArray.length)
+
+      setFilteredData(tempArray)
+        // servesAlcohol: bool
+        // fullHalal: bool
+        // rating: number
+        // price_level: number
+    }
   }, [complexFilters])
 
-  var complexFiltersEG =
-  {
-    fullyHalal: true,
-    servesAlcohol: false,
-    priceLevel: 0,
-    minRating: 0
+  const handleApplyFilters = (filterObject) => {
+    setModalVisible(false)
+    setComplexFilters(filterObject)
   }
 
   const renderItem = ({ item }) => <ListViewItem key={item.id} item={item} />
@@ -102,8 +108,7 @@ export default function ListView() {
           </View>
 
           <View style={{ paddingHorizontal: 25 }}>
-            <FilterView setFilters={setComplexFilters} />
-            <Button title={'Apply Filters'} />
+            <FilterView applyFilters={handleApplyFilters} filters={complexFilters}/>
           </View>
 
         </View>
@@ -122,10 +127,9 @@ const styles = StyleSheet.create({
   }
 })
 
-const FilterView = ({ setFilters }) => {
+const FilterView = ({ applyFilters, filters }) => {
 
   const handleRating = (r) => {
-    console.log('what the fuck');
     setRating(r)
   }
 
@@ -134,24 +138,41 @@ const FilterView = ({ setFilters }) => {
   const [rating, setRating] = useState(null)
   const [price, setPrice] = useState(null)
 
-  const [clickedID, setClickedID] = useState(-1)
+  const handleApply = () => {
+    let filters = {
+      ...(halal && {halal: halal}),
+      ...(alcohol && {alcohol: alcohol}),
+      ...(rating!==null && {rating: rating}),
+      ...(price!==null && {price: price})
+    }
 
+    applyFilters(filters)
+  }
 
-  useEffect(() => {
-    setFilters({
-      halal: halal,
-      alcohol: alcohol,
-      rating: rating,
-      price: price
-    })
-  },
-    [halal, alcohol, rating, price])
+  const handleClear = () => {
+    applyFilters(null)
+    setAlcohol(null)
+    setHalal(null)
+    setRating(null)
+    setPrice(null)
+  }
+
+  useEffect(()=>{
+    console.debug('We have opened modal')
+    
+    if(filters) {
+      setAlcohol(filters.alcohol ?? null)
+      setHalal(filters.halal ?? null)
+      setRating(filters.rating ?? null)
+      setPrice(filters.price ?? null)
+    }
+  }, [])
 
   return (
     <>
       <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text h4>Filters</Text>
-        <Button icon={<Icon type="feather" name='trash-2' color={'red'} solid={true} />} type={'clear'} />
+        <Button onPress={handleClear} icon={<Icon type="feather" name='trash-2' color={'red'} solid={true} />} type={'clear'} />
       </View>
 
       <ListItem topDivider bottomDivider>
@@ -172,10 +193,11 @@ const FilterView = ({ setFilters }) => {
         <ListItem.Content style={{ display: 'flex', flexDirection: 'column' }}>
           <Text style={{ textAlign: 'left', marginBottom: 5 }}>Price Level:</Text>
           <ButtonGroup
-            onPress={(idx) => (setPrice(idx + 1))}
-            selectedIndex={clickedID}
+            onPress={(idx) => {
+              setPrice(idx)
+            }}
+            selectedIndex={price}
             buttons={['£', '££', '£££']}
-            selectedButtonStyle={{ backgroundColor: 'blue' }}
           />
         </ListItem.Content>
       </ListItem>
@@ -184,46 +206,11 @@ const FilterView = ({ setFilters }) => {
         <ListItem.Content style={{ display: 'flex', flexDirection: 'column' }}>
           <Text style={{ textAlign: 'left', marginBottom: 5 }}>Minimum Rating:</Text>
           <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', width: '100%', flexWrap: 'wrap', alignContent: 'space-between' }}>
-            <Rating fractions={0} startingValue={5} onFinishRating={handleRating} />
+            <Rating fractions={0} startingValue={5} onFinishRating={handleRating}/>
           </View>
         </ListItem.Content>
       </ListItem>
-
+      <Button title={'Apply Filters'} onPress={handleApply}/>
     </>
-  )
-}
-
-const PriceLevel = ({ priceCB }) => {
-  const [price, setPrice] = useState(null)
-  const [clickedID, setClickedID] = useState(-1)
-
-  const handleClick = (idx) => {
-    console.log(idx)
-    // if (id === clickedID) {
-    //   setClickedID(null)
-    // } else{
-    //   setClickedID(id)
-    //   priceCB(id)
-    // }
-  }
-
-
-  useEffect(() => { console.log(clickedID) }, [clickedID])
-
-  return (
-    <ButtonGroup
-      onPress={handleClick}
-      selectedIndex={clickedID}
-      buttons={['£', '££', '£££']}
-      selectedButtonStyle={{ backgroundColor: 'blue' }}
-      underlayColor={'red'}
-    />
-
-    // <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
-
-    //   {/* <Chip onPress={handleClick} id={1} title={'£'} titleStyle={{ color: 'black' }} type={ clickedID === 1 ? 'solid' : 'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }} />
-    //   <Chip onPress={handleClick} id={2} title={'££'} titleStyle={{ color: 'black' }} type={'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }} />
-    //   <Chip onPress={handleClick} id={3} title={'£££'} titleStyle={{ color: 'black' }} type={'outline'} buttonStyle={{ marginHorizontal: 10, borderColor: 'black' }} /> */}
-    // </View>
   )
 }
