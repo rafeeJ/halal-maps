@@ -10,19 +10,15 @@ import { ResturantContext } from '../providers/RestaurantProvider';
 import { ButtonGroup } from "@rneui/themed";
 
 import Modal from 'react-native-modal';
+import { countBy } from 'lodash';
 
 export default function ListView() {
 
-  const { restaurants, categories, region } = useContext(ResturantContext)
+  const { restaurants, region } = useContext(ResturantContext)
 
-  const [filters, setFilters] = useState(null)
-
+  const [availableCategories, setAvailableCategories] = useState(null)
   const [complexFilters, setComplexFilters] = useState(null)
-
   const [filteredData, setFilteredData] = useState([])
-
-  const [searchedArray, setSearchedArray] = useState([])
-
   const [modalVisible, setModalVisible] = useState(false)
 
   const [searchString, setSearchString] = useState('')
@@ -32,55 +28,67 @@ export default function ListView() {
   }
 
   const handleTextInput = (value) => {
-    setSearchString(value)
+    if (value !== '') {
+      setSearchString(value)
+      setComplexFilters({ ...complexFilters, search: value })
+    } else {
+      setSearchString('')
+      let x = complexFilters
+      delete x.search
+      if (Object.keys(x).length === 0) {
+        setComplexFilters(null)
+      } else {
+        setComplexFilters(x)
+      }
+    }
   }
 
   useEffect(() => {
-    if (searchString !== '') {
-      if (filteredData.length > 0) {
-        let t = filteredData.filter(r => r.name.toLowerCase().includes(searchString.toLowerCase()))
-        setSearchedArray(t)
-      } else {
-        let t = restaurants.filter(r => r.name.toLowerCase().includes(searchString.toLowerCase()))
-        setSearchedArray(t)
-      }
-    } else {
-      setSearchedArray([])
+    if (restaurants) {
+      setAvailableCategories(getCategories(restaurants))
     }
-  }, [searchString])
+  }, [restaurants])
 
   useEffect(() => {
-    if (filters) {
-      console.log(`updating filter with: ${filters}`);
+    console.log(complexFilters)
 
-      let tempFilter = restaurants.filter(restaurant => restaurant.categories.includes(filters))
-
-      setFilteredData(tempFilter)
-    } else {
-      setFilteredData([])
-    }
-  }, [filters])
-
-  useEffect(() => {
     if (complexFilters) {
-      
-      var tempArray = restaurants.filter( r => {
-        return (complexFilters.halal ? r.fullHalal === complexFilters.halal : 1) && 
-               (complexFilters.alcohol ? r.servesAlcohol === complexFilters.alcohol : 1) &&
-               (complexFilters.rating ? r.rating >= complexFilters.rating : 1) && 
-               (complexFilters.price ? r.price_level === complexFilters.price: 1)
+
+      var tempArray = restaurants.filter(r => {
+        return (complexFilters.halal ? r.fullHalal === complexFilters.halal : 1) &&
+          (complexFilters.alcohol ? r.servesAlcohol === complexFilters.alcohol : 1) &&
+          (complexFilters.rating ? r.rating >= complexFilters.rating : 1) &&
+          (complexFilters.price ? r.price_level === complexFilters.price : 1) &&
+          (complexFilters.search ? r.name.toLowerCase().includes(complexFilters.search.toLowerCase()) : 1) &&
+          (complexFilters.category ? r.categories.includes(complexFilters.category) : 1)
       })
+
       // Set available categories to filter here!
       setFilteredData(tempArray)
-      
+        
     } else {
       setFilteredData([])
+      setAvailableCategories(getCategories(restaurants))
     }
   }, [complexFilters])
 
   const handleApplyFilters = (filterObject) => {
     setModalVisible(false)
     setComplexFilters(filterObject)
+  }
+
+  const handleSelectCategory = (category) => {
+    if (category) {
+      setComplexFilters({ ...complexFilters, category: category})
+    } else {
+      let x = complexFilters
+      delete x.category
+      if (Object.keys(x).length === 0) {
+        setComplexFilters(null)
+      } else {
+        setComplexFilters(x)
+      }
+    }
   }
 
   const renderItem = ({ item }) => <ListViewItem key={item.id} item={item} />
@@ -94,21 +102,21 @@ export default function ListView() {
       <View style={styles.SAView}>
         <View style={{ display: 'flex', flexDirection: 'row', paddingHorizontal: 5, marginTop: 5 }}>
           <View style={{ flex: 1 }}>
-            <Input value={searchString} placeholder='Search by Name' onChangeText={handleTextInput}/>
+            <Input value={searchString} placeholder='Search by Name' onChangeText={handleTextInput} />
           </View>
           <Button icon={<Icon type="feather" name='filter' color={'black'} solid={true} />}
-            buttonStyle={{ marginHorizontal: 10, borderColor: 'black', backgroundColor: complexFilters ? 'red' : 'white'}}
+            buttonStyle={{ marginHorizontal: 10, borderColor: 'black', backgroundColor: complexFilters ? 'red' : 'white' }}
             onPress={toggleModal}
             type={'outline'}
           />
         </View>
-        <FilterBar cats={categories} setState={setFilters} />
+        <FilterBar cats={availableCategories} setState={handleSelectCategory} />
         <FlatList
           initialNumToRender={7}
           maxToRenderPerBatch={6}
           removeClippedSubviews={true}
           style={styles.list}
-          data={searchString ? searchedArray : filteredData && filteredData.length > 0 ? filteredData : restaurants}
+          data={filteredData && filteredData.length > 0 ? filteredData : restaurants}
           renderItem={renderItem}
           keyExtractor={(item, index) => index} />
 
@@ -126,7 +134,7 @@ export default function ListView() {
           </View>
 
           <View style={{ paddingHorizontal: 25 }}>
-            <FilterView applyFilters={handleApplyFilters} filters={complexFilters}/>
+            <FilterView applyFilters={handleApplyFilters} filters={complexFilters} />
           </View>
 
         </View>
@@ -157,14 +165,14 @@ const FilterView = ({ applyFilters, filters }) => {
   const [price, setPrice] = useState(null)
 
   const handleApply = () => {
-    let filters = {
-      ...(halal && {halal: halal}),
-      ...(alcohol && {alcohol: alcohol}),
-      ...(rating!==null && {rating: rating}),
-      ...(price!==null && {price: price})
+    let filtersToApply = {
+      ...(halal && { halal: halal }),
+      ...(alcohol && { alcohol: alcohol }),
+      ...(rating !== null && { rating: rating }),
+      ...(price !== null && { price: price })
     }
 
-    applyFilters(filters)
+    applyFilters(filtersToApply)
   }
 
   const handleClear = () => {
@@ -175,10 +183,10 @@ const FilterView = ({ applyFilters, filters }) => {
     setPrice(null)
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     console.debug('We have opened modal')
-    
-    if(filters) {
+
+    if (filters) {
       setAlcohol(filters.alcohol ?? null)
       setHalal(filters.halal ?? null)
       setRating(filters.rating ?? null)
@@ -224,11 +232,33 @@ const FilterView = ({ applyFilters, filters }) => {
         <ListItem.Content style={{ display: 'flex', flexDirection: 'column' }}>
           <Text style={{ textAlign: 'left', marginBottom: 5 }}>Minimum Rating:</Text>
           <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-around', width: '100%', flexWrap: 'wrap', alignContent: 'space-between' }}>
-            <Rating fractions={0} startingValue={5} onFinishRating={handleRating}/>
+            <Rating fractions={0} startingValue={rating} onFinishRating={handleRating} />
           </View>
         </ListItem.Content>
       </ListItem>
-      <Button title={'Apply Filters'} onPress={handleApply}/>
+      <Button title={'Apply Filters'} onPress={handleApply} />
     </>
   )
+}
+
+const getCategories = (restaurants) => {
+  const categories = []
+
+  restaurants.forEach(r => {
+    categories.push(...r.categories)
+  })
+
+  let categoryOccurences = countBy(categories);
+
+  let sortedArray = [];
+  for (var category in categoryOccurences) {
+    sortedArray.push([category, categoryOccurences[category]])
+  }
+
+  sortedArray.sort((a, b) => {
+    return b[1] - a[1]
+  })
+
+  return sortedArray
+
 }
