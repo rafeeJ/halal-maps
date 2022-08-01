@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Dimensions, FlatList, StatusBar, StyleSheet, View } from 'react-native';
 
-import { Button, Icon, Input, ListItem, Rating, Switch, Text } from 'react-native-elements';
+import { Badge, Button, Icon, Input, ListItem, Rating, Switch, Text } from 'react-native-elements';
 import FilterBar from '../components/FilterBar';
 import ListViewItem from '../components/ListViewItem';
 import NoLocationScreen from '../components/NoLocationScreen';
@@ -110,9 +110,13 @@ export default function ListView() {
           <View style={{ flex: 1 }}>
             <Input value={searchString} placeholder='Search by Name' onChangeText={handleTextInput} />
           </View>
-          <Icon type="feather" name='filter' color={'blue'} raised
-          onPress={toggleModal}
-          reverse={complexFilters}/>
+          <View>
+          <Button onPress={toggleModal} icon={<Icon type="feather" name='filter'/>} type={'clear'}/>
+          { complexFilters ?
+          <Badge containerStyle={{position: 'absolute'}} status={'error'} value={Object.keys(complexFilters).length}/> :
+          <></>
+          }
+          </View>
         </View>
 
         <FilterBar cats={availableCategories} setState={handleSelectCategory} />
@@ -172,8 +176,8 @@ const FilterView = ({ applyFilters, filters }) => {
 
   const handleApply = () => {
     let filtersToApply = {
-      ...(halal && { halal: halal }),
-      ...(alcohol && { alcohol: alcohol }),
+      ...(halal !== null&& { halal: halal }),
+      ...(alcohol !==null && { alcohol: alcohol }),
       ...(rating !== null && { rating: rating }),
       ...(price !== null && { price: price })
     }

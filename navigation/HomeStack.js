@@ -26,7 +26,7 @@ export default function HomeStack() {
     return <Icon name="close" type="ionicon" style={{paddingRight: 10}} onPress={() => (navigation.pop())}/>
   }
 
-  function profileStack() {
+  function ProfileStack() {
     const ps = createStackNavigator()
     return (
       <ps.Navigator>
@@ -38,7 +38,7 @@ export default function HomeStack() {
     )
   }
 
-  function mapStack() {
+  function MapStack() {
     const ms = createStackNavigator()
     return (
       <ms.Navigator screenOptions={{ 
@@ -49,7 +49,7 @@ export default function HomeStack() {
     )
   }
 
-  function listStack() {
+  function ListStack() {
     const ls = createStackNavigator()
     return (
       <ls.Navigator screenOptions={{ headerShown: true, title: 'Restaurants' }}>
@@ -63,7 +63,7 @@ export default function HomeStack() {
     <View style={{ flex: 1, backgroundColor: 'blue' }} />
   );
 
-  function mainStack() {
+  function MainStack() {
     return (
       <Tab.Navigator 
       screenOptions={({ route }) => ({ headerShown: false, 
@@ -82,8 +82,8 @@ export default function HomeStack() {
         }
       return <Icon name={iconName} color={color} size={size} type="ionicon"/>
       }, })}>
-        <Tab.Screen name="Map" component={mapStack} />
-        <Tab.Screen name="List" component={listStack} options={{ headerShown: false, title: 'Restaurants' }}/>
+        <Tab.Screen name="Map" component={MapStack} />
+        <Tab.Screen name="List" component={ListStack} options={{ headerShown: false, title: 'Restaurants' }}/>
         <Tab.Screen name="ProfileTab" options={{title: 'Profile'}} component={CreatePlaceholder} listeners={({ navigation }) => ({
           tabPress: event => {
             event.preventDefault();
@@ -105,8 +105,8 @@ export default function HomeStack() {
         gestureEnabled: true,
         cardOverlayEnabled: true,
       })}>
-        <Stack.Screen name="Main" component={mainStack} />
-        <Stack.Screen name="ProfileStack" component={profileStack} options={{title: 'Profile'}}/>
+        <Stack.Screen name="Main" component={MainStack} />
+        <Stack.Screen name="ProfileStack" component={ProfileStack} options={{title: 'Profile'}}/>
     </Stack.Navigator>
   );
 }
