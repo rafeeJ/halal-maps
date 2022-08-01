@@ -65,7 +65,7 @@ export default function ListView() {
 
       // Set available categories to filter here!
       setFilteredData(tempArray)
-        
+
     } else {
       setFilteredData([])
       setAvailableCategories(getCategories(restaurants))
@@ -79,15 +79,20 @@ export default function ListView() {
 
   const handleSelectCategory = (category) => {
     if (category) {
-      setComplexFilters({ ...complexFilters, category: category})
+      setComplexFilters({ ...complexFilters, category: category })
     } else {
-      let x = complexFilters
-      delete x.category
-      if (Object.keys(x).length === 0) {
-        setComplexFilters(null)
-      } else {
-        setComplexFilters(x)
+      try {
+        let x = complexFilters
+        delete x.category
+        if (Object.keys(x).length === 0) {
+          setComplexFilters(null)
+        } else {
+          setComplexFilters(x)
+        }
+      } catch (error) {
+        console.log('error')
       }
+
     }
   }
 
@@ -100,25 +105,26 @@ export default function ListView() {
   return (
     <>
       <View style={styles.SAView}>
-        <View style={{ display: 'flex', flexDirection: 'row', paddingHorizontal: 5, marginTop: 5 }}>
+
+        <View style={{ display: 'flex', flexDirection: 'row', paddingHorizontal: 5, marginTop: 5, alignItems: 'baseline' }}>
           <View style={{ flex: 1 }}>
             <Input value={searchString} placeholder='Search by Name' onChangeText={handleTextInput} />
           </View>
-          <Button icon={<Icon type="feather" name='filter' color={'black'} solid={true} />}
-            buttonStyle={{ marginHorizontal: 10, borderColor: 'black', backgroundColor: complexFilters ? 'red' : 'white' }}
-            onPress={toggleModal}
-            type={'outline'}
-          />
+          <Icon type="feather" name='filter' color={'blue'} raised
+          onPress={toggleModal}
+          reverse={complexFilters}/>
         </View>
+
         <FilterBar cats={availableCategories} setState={handleSelectCategory} />
         <FlatList
-          initialNumToRender={7}
+          initialNumToRender={3}
           maxToRenderPerBatch={6}
           removeClippedSubviews={true}
           style={styles.list}
           data={filteredData && filteredData.length > 0 ? filteredData : restaurants}
           renderItem={renderItem}
-          keyExtractor={(item, index) => index} />
+          keyExtractor={(item, index) => index}
+          windowSize={4} />
 
       </View>
 

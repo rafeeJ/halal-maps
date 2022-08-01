@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
 
     paddingHorizontal: 5,
+    paddingBottom: 10,
 
   },
   initials: {

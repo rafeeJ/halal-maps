@@ -1,38 +1,41 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Chip } from 'react-native-elements';
 import seedColor from 'seed-color'
 
 
-export default function ListViewItem(props) {
+export default function ListViewItem({ item }) {
   const navigation = useNavigation();
-  const [categories, setCategories] = useState([])
+
   const [color, setColor] = useState('blue')
 
-  // useEffect(() => {
-  //   const x = ['Halal', '$', '$$', '$$$', 'Vegan', 'Vegetarian']
-  //   var cats = 'uberData' in props.item ? props.item.uberData.categories : props.item.zabData.categories
-  //   var cats = cats.filter(el => !x.includes(el))
-  //   setCategories(cats.slice(0, 2))
-  //   setColor(seedColor(cats[0]).toHex())
-  // }, [])
+  useEffect(() => {
+    setColor(seedColor(item.categories[0]).toHex())
+  }, [])
 
   return (
     <TouchableOpacity
       style={styles.container}
-      onPress={() => navigation.navigate("Restaurant", { restaurant: props.item })}
+      onPress={() => navigation.navigate("Restaurant", { restaurant: item })}
     >
-      <View style={{ backgroundColor: color, borderRadius: 7}} width={50} height={'100%'}></View>
-      <View style={{flexGrow: 5, padding: 10 }}>
-        <Text style={{ color: 'black', marginVertical: 10 }}>{props.item.name}</Text>
+      <View style={{ backgroundColor: color, borderRadius: 7 }} width={Dimensions.get('screen').width * 0.2} height={'100%'}></View>
+      
+      <View style={{ flexGrow: 1, padding: 10}}>
+        
+        <View style={{ display: 'flex', flexDirection: 'row', width: '100%', flexWrap: 'wrap', flexShrink: 1, alignItems: 'center'}}>
+          <Text style={{ color: 'black', marginVertical: 10}}>{item.name}</Text>
+          <Text>{item.rating ? `${'\u22C5'}${'\u2605'.repeat(item.rating)}` : ''}</Text>
+        </View>
+
         <View style={{ flexDirection: 'row' }}>
           {
-            categories.map((el, i) => (
+            item.categories.slice(0, 2).map((el, i) => (
               <Chip title={el} containerStyle={{ marginVertical: 5, marginHorizontal: 5 }} key={i} />
             ))
           }
         </View>
+
       </View>
     </TouchableOpacity>
   );
@@ -40,6 +43,8 @@ export default function ListViewItem(props) {
 
 const styles = StyleSheet.create({
   container: {
+    minWidth: 0,
+    overflow: 'hidden',
     backgroundColor: 'white',
 
     borderRadius: 8,
